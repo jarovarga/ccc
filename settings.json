@@ -1,0 +1,255 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "effortLevel": "medium",
+  "fastMode": false,
+  "model": "opusplan",
+  "switchModelsOnFlag": false,
+
+  "autoCompactEnabled": true,
+  "autoCompactWindow": 250000,
+  "bashOutputMaxChars": 10000,
+  "respectGitignore": true,
+
+  "autoContinueAtUsageLimit": false,
+  "awaySummaryEnabled": false,
+  "promptSuggestionEnabled": false,
+  "workflowKeywordTriggerEnabled": false,
+
+  "disableClaudeAiConnectors": true,
+  "enableArtifact": false,
+  "remoteControlAtStartup": false,
+  "syncClaudeAiSkills": false,
+
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "includeGitInstructions": false,
+
+  "autoUpdatesChannel": "stable",
+  "cleanupPeriodDays": 14,
+  "fileCheckpointingEnabled": true,
+  "minimumVersion": "2.1.261",
+
+  "skillOverrides": {
+    "claude-api": "on",
+    "security-review": "on",
+    "update-config": "on",
+
+    "code-review": "name-only",
+
+    "batch": "user-invocable-only",
+    "claude-in-chrome": "user-invocable-only",
+    "debug": "user-invocable-only",
+    "doctor": "user-invocable-only",
+    "fewer-permission-prompts": "user-invocable-only",
+    "init": "user-invocable-only",
+    "keybindings-help": "user-invocable-only",
+    "loop": "user-invocable-only",
+    "run": "user-invocable-only",
+    "run-skill-generator": "user-invocable-only",
+    "schedule": "user-invocable-only",
+    "simplify": "user-invocable-only",
+    "verify": "user-invocable-only",
+
+    "artifact-capabilities": "off",
+    "artifact-design": "off",
+    "artifact-diagramming": "off",
+    "dataviz": "off",
+    "design": "off",
+    "design-sync": "off",
+    "plugin-authoring": "off",
+    "slides": "off",
+    "workflow-authoring": "off"
+  },
+
+  "env": {
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "30",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "MAX_MCP_OUTPUT_TOKENS": "10000"
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "command": "rtk hook claude",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "defaultMode": "auto",
+    "disableBypassPermissionsMode": "disable",
+
+    "allow": [
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:developer.mozilla.org)"
+    ],
+
+    "ask": [
+      "Bash(gh *)",
+
+      "Bash(git add --all *)",
+      "Bash(git add --update *)",
+      "Bash(git add -A *)",
+      "Bash(git add -u *)",
+      "Bash(git add . *)",
+      "Bash(git checkout *)",
+      "Bash(git commit *)",
+      "Bash(git rm *)",
+      "Bash(git stash clear*)",
+      "Bash(git stash drop*)",
+
+      "Bash(rm *)",
+
+      "Edit(./.claude/**)",
+      "Edit(./.gitignore)",
+      "Edit(./.mcp.json)",
+      "Edit(~/.claude.json)",
+      "Edit(~/.claude/*.md)",
+      "Edit(~/.claude/agents/**)",
+      "Edit(~/.claude/commands/**)",
+      "Edit(~/.claude/hooks/**)",
+      "Edit(~/.claude/rules/**)",
+      "Edit(~/.claude/settings*.json)",
+      "Edit(~/.claude/skills/**)",
+
+      "WebSearch"
+    ],
+
+    "deny": [
+      "Bash(bash -s*)",
+      "Bash(bash)",
+
+      "Bash(env)",
+
+      "Bash(git *--no-veri*)",
+      "Bash(git -C * branch -D*)",
+      "Bash(git -C * checkout --*)",
+      "Bash(git -C * clean*)",
+      "Bash(git -C * commit * -n*)",
+      "Bash(git -C * commit *--amend*)",
+      "Bash(git -C * commit -an*)",
+      "Bash(git -C * commit -n*)",
+      "Bash(git -C * config *core.*)",
+      "Bash(git -C * filter-branch*)",
+      "Bash(git -C * push*)",
+      "Bash(git -C * rebase*)",
+      "Bash(git -C * reset*)",
+      "Bash(git -C * restore*)",
+      "Bash(git -c *)",
+      "Bash(git branch -D *)",
+      "Bash(git checkout -- *)",
+      "Bash(git clean *)",
+      "Bash(git commit * -n*)",
+      "Bash(git commit *--amend*)",
+      "Bash(git commit -an*)",
+      "Bash(git commit -n*)",
+      "Bash(git config *core.*)",
+      "Bash(git filter-branch *)",
+      "Bash(git push *)",
+      "Bash(git rebase *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+
+      "Bash(printenv*)",
+
+      "Bash(rm --recursive*)",
+      "Bash(rm -R*)",
+      "Bash(rm -fR*)",
+      "Bash(rm -fr*)",
+      "Bash(rm -r*)",
+
+      "Bash(sh -s*)",
+      "Bash(sh)",
+
+      "Bash(sudo *)",
+
+      "Bash(zsh -s*)",
+      "Bash(zsh)",
+
+      "Edit(**/*.crt)",
+      "Edit(**/*.key)",
+      "Edit(**/*.p12)",
+      "Edit(**/*.pem)",
+      "Edit(**/*.pfx)",
+      "Read(**/*.crt)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pem)",
+      "Read(**/*.pfx)",
+
+      "Edit(**/*.env)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.envrc)",
+      "Edit(!**/.env.example)",
+      "Read(**/*.env)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.envrc)",
+      "Read(!**/.env.example)",
+
+      "Edit(**/.git-credentials)",
+      "Edit(**/.netrc)",
+      "Edit(**/.ssh/**)",
+      "Read(**/.git-credentials)",
+      "Read(**/.netrc)",
+      "Read(**/.ssh/**)",
+
+      "Edit(**/id_ecdsa*)",
+      "Edit(**/id_ed25519*)",
+      "Edit(**/id_rsa*)",
+      "Read(**/id_ecdsa*)",
+      "Read(**/id_ed25519*)",
+      "Read(**/id_rsa*)",
+
+      "Edit(~/.aws/**)",
+      "Edit(~/.git-credentials)",
+      "Edit(~/.gnupg/**)",
+      "Edit(~/.netrc)",
+      "Edit(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.git-credentials)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.netrc)",
+      "Read(~/.ssh/**)"
+    ]
+  },
+
+  "sandbox": {
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": true,
+    "credentials": {
+      "files": [
+        { "mode": "deny", "path": "~/.aws" },
+        { "mode": "deny", "path": "~/.git-credentials" },
+        { "mode": "deny", "path": "~/.gnupg" },
+        { "mode": "deny", "path": "~/.netrc" },
+        { "mode": "deny", "path": "~/.ssh" }
+      ]
+    },
+    "enabled": true,
+    "excludedCommands": ["gh *"],
+    "failIfUnavailable": true,
+    "network": {
+      "allowLocalBinding": true
+    }
+  },
+
+  "worktree": {
+    "baseRef": "head",
+    "bgIsolation": "worktree"
+  }
+}
