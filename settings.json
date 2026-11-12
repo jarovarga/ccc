@@ -180,50 +180,66 @@
       "Bash(zsh)",
 
       "Edit(**/*.crt)",
-      "Edit(**/*.key)",
-      "Edit(**/*.p12)",
-      "Edit(**/*.pem)",
-      "Edit(**/*.pfx)",
       "Read(**/*.crt)",
+
+      "Edit(**/*.key)",
       "Read(**/*.key)",
+
+      "Edit(**/*.p12)",
       "Read(**/*.p12)",
+
+      "Edit(**/*.pem)",
       "Read(**/*.pem)",
+
+      "Edit(**/*.pfx)",
       "Read(**/*.pfx)",
 
       "Edit(**/*.env)",
-      "Edit(**/.env)",
-      "Edit(**/.env.*)",
-      "Edit(**/.envrc)",
-      "Edit(!**/.env.example)",
       "Read(**/*.env)",
+
+      "Edit(**/.env)",
       "Read(**/.env)",
+
+      "Edit(**/.env.*)",
       "Read(**/.env.*)",
-      "Read(**/.envrc)",
+
+      "Edit(!**/.env.example)",
       "Read(!**/.env.example)",
 
+      "Edit(**/.envrc)",
+      "Read(**/.envrc)",
+
       "Edit(**/.git-credentials)",
-      "Edit(**/.netrc)",
-      "Edit(**/.ssh/**)",
       "Read(**/.git-credentials)",
+
+      "Edit(**/.netrc)",
       "Read(**/.netrc)",
+
+      "Edit(**/.ssh/**)",
       "Read(**/.ssh/**)",
 
       "Edit(**/id_ecdsa*)",
-      "Edit(**/id_ed25519*)",
-      "Edit(**/id_rsa*)",
       "Read(**/id_ecdsa*)",
+
+      "Edit(**/id_ed25519*)",
       "Read(**/id_ed25519*)",
+
+      "Edit(**/id_rsa*)",
       "Read(**/id_rsa*)",
 
       "Edit(~/.aws/**)",
-      "Edit(~/.git-credentials)",
-      "Edit(~/.gnupg/**)",
-      "Edit(~/.netrc)",
-      "Edit(~/.ssh/**)",
       "Read(~/.aws/**)",
+
+      "Edit(~/.git-credentials)",
       "Read(~/.git-credentials)",
+
+      "Edit(~/.gnupg/**)",
       "Read(~/.gnupg/**)",
+
+      "Edit(~/.netrc)",
       "Read(~/.netrc)",
+
+      "Edit(~/.ssh/**)",
       "Read(~/.ssh/**)"
     ]
   },

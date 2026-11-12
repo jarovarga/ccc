@@ -1,0 +1,33 @@
+# WordPress
+
+Settings and rules for themes for WordPress.
+
+## Installation
+
+Copy `rules/` into the project's `.claude/rules/`, and merge `settings.json` into the project's `.claude/settings.json`. If the project has no settings file yet, copy it.
+
+Join the project's own `permissions.allow`, `ask` and `deny` lists with those of the framework instead of replacing them, and check every scalar value that both files set.
+
+Run Claude Code from the project root, because the paths in the file are relative to it.
+
+## Settings
+
+| Setting | Reason |
+| --- | --- |
+| `claudeMdExcludes` | Keeps the `CLAUDE.md` files and rules of Composer and npm packages in `vendor/` and `node_modules/` from loading. |
+| `worktree.symlinkDirectories` | Links `node_modules/` and `vendor/` into a worktree instead of copying them. |
+| `allow` for `wp core version`, `wp option get`, `wp plugin list`, `wp theme list`, `wp cron event list` and `wp rewrite list` | These only read and report. |
+| `allow` for `npm run build`, `format:check` and `lint` | They only build, read and report. |
+| `allow` for PHPCS and PHPStan | These only read code and report. |
+| `allow` for `WebFetch` | The WordPress Developer Resources, the Make WordPress blogs, the MariaDB documentation and the PHP manual are official documentation. |
+| `ask` for `wp eval` and `wp eval-file` | They run arbitrary PHP. |
+| `ask` for `wp db`, `wp search-replace`, `wp cache flush` and `wp transient delete` | They read or change the database. |
+| `ask` for installing, updating, activating, deactivating and deleting plugins and themes, `wp core update` and `wp scaffold` | They change code or the site. |
+| `ask` for `composer` and `npm` | Dependency changes need a decision. |
+| `deny` for `wp config` | `wp config get` and `list` print the database password and the salts. |
+| `deny` for `Read` and `Edit` on `.npmrc` and `auth.json` | They hold the tokens of npm and Composer registries. The rules match at any depth in the project, not in the home directory. |
+| `deny` for `Read` and `Edit` on `wp-config.php`, and `sandbox.credentials.files` for `./wp-config.php` | The file holds the database credentials and the salts. The `Read` and `Edit` rule matches at any depth; change the sandbox path when WordPress lives in a subdirectory, such as `./wordpress/wp-config.php`. |
+
+The stack rule `html.md` loads only for `.html` and `.twig` files. To apply it to the templates, copy it into the project's `.claude/rules/` and set its `paths` to the template files of the theme, such as `themes/*/*.php`, `themes/*/template-parts/**/*.php` and `themes/*/templates/**/*.php`.
+
+Prefix the `wp`, PHPCS and PHPStan commands with the wrapper of the project when they run in a container, as described in the main README under Per-project settings.

@@ -11,15 +11,20 @@ Target features that are Baseline Widely available unless the project declares o
 
 - Resolve cascade conflicts with layers and source order instead of raising specificity.
 - Declare the layer order once, in a single `@layer` statement at the start of the entry stylesheet.
-- Import files with `layer()` and keep tokens unlayered.
+- Import files with `layer()`.
+- Never use `!important` or ID selectors.
+- Do not qualify a class with a tag name, such as `div.card`.
+- Nest rules at most two levels deep, not counting media, supports and container queries or pseudo-classes, and start every nested selector with `&`.
 - Write the reset with zero specificity through `:where()` and without component styling.
 
 ## Tokens
 
+- Write colours through tokens.
+- Name custom properties and keyframes in lowercase words joined by single hyphens, and classes likewise except for the separators of a naming methodology such as BEM.
 - Keep global design values in tokens: colours, fonts, text sizes, font weights, line heights, letter spacing, radii, blur, transition durations and easing.
 - Do not duplicate a token's meaning.
 - Keep component-specific custom properties on the component, not in `:root`.
-- Write one-off animation durations and delays as literals; use a token only when several animations share the value.
+- Reference only custom properties, animations and custom media that exist.
 - Give every custom property a meaningful role; never wrap an arbitrary literal.
 - Name colour tokens by purpose, such as `--color-surface`, not appearance.
 - Add a variant token only when several components share it; derive one-off state shades, such as hover, in the component.
@@ -35,14 +40,14 @@ Target features that are Baseline Widely available unless the project declares o
 - Use media queries for page-level responsiveness and container queries when a component responds to its container.
 - Set `container-type: inline-size` on a named container and use `cqi` units inside the query.
 - Prefer logical properties such as `margin-block`, `padding-inline`, `inline-size` and logical insets and borders.
-- Use `rem` for dimensions and insets, `em` for local font-relative values, `%` for relative sizes and `fr` for Grid.
+- Use `rem` for dimensions and insets, `em` for local font-relative values, `%` for relative sizes and `fr` for Grid, and never `px` for `font-size`.
 - Use `svh` or `dvh` instead of `vh`.
-- Use `:where()` for zero specificity.
 - Use `:has()` only for a genuine relational requirement, not instead of a simple modifier.
 
 ## States and accessibility
 
 - Style native states with pseudo-classes.
+- Prefer a native or ARIA attribute, such as `hidden` or `aria-expanded`, to a state class, and add a state class only for a state that no attribute expresses.
 - Treat hover as an enhancement that core functionality never depends on; gate it with pointer and hover queries where useful.
 - Show focus with `:focus-visible` at an indicator contrast of at least 3:1.
 - Keep focused elements clear of sticky headers and footers with `scroll-padding` or `scroll-margin`.
@@ -72,7 +77,10 @@ Target features that are Baseline Widely available unless the project declares o
 ## Quality
 
 - Set `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
-- Prefer local `woff2` fonts.
+- Prefer local `woff2` fonts and set `font-display` to `swap`.
+- Name the transitioned properties instead of `all`.
+- Do not use `float` for layout.
+- Use no scheme-relative URLs, such as `url(//example.com/a.png)`.
 - Never duplicate `@font-face` per component or reference unloaded font weights.
 - Diagnose stacking contexts instead of escalating `z-index`.
 - Diagnose the cause of overflow instead of hiding it; use `overflow: clip` only for intentional clipping.

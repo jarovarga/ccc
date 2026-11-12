@@ -11,6 +11,7 @@ Target features that are Baseline Widely available unless the project declares o
 
 - Set `lang` on `html` and on passages in another language.
 - Choose elements by meaning, not appearance.
+- Use no unknown elements.
 - Use `div` or `span` only when no semantic element fits; avoid wrappers that exist only as styling hooks.
 - Keep only the primary page content in `main`, not repeated navigation or footer content.
 - Use `section` for a thematic section that normally has a heading and `article` for self-contained content, never because a component looks like a section or card.
@@ -25,10 +26,12 @@ Target features that are Baseline Widely available unless the project declares o
 - Give data tables a `caption` where needed.
 - Never use `br` or empty elements for spacing.
 - Use `time` with a machine-readable `datetime` for dates and times.
+- Keep a number and its unit together with `&nbsp;`.
 
 ## Attributes
 
 - Add classes only where styling or scripting needs them.
+- Write attribute values in double quotes.
 - Add IDs only for fragments or form or ARIA relationships, never for styling.
 - Hook scripts to `data-*` attributes or classes rather than IDs.
 - Keep field names that a server-side framework or CMS dictates.
@@ -40,6 +43,7 @@ Target features that are Baseline Widely available unless the project declares o
 - Write descriptive link text.
 - Do not rely on `<base>`.
 - Do not open external links in new tabs automatically.
+- Write external links over `https://`.
 - Give `target="_blank"` links `rel="noopener"` for older browsers; add `noreferrer` only when the referrer must be hidden.
 - Give icon-only controls an `aria-label`.
 - Give an icon-only control that controls other content or toggles `aria-controls`, `aria-expanded` or `aria-pressed`.
@@ -83,20 +87,23 @@ Target features that are Baseline Widely available unless the project declares o
 - Lazy-load below-the-fold images and iframes with `loading="lazy"`, never images critical to the initial viewport.
 - Give the key above-the-fold image `fetchpriority="high"` and non-critical images `decoding="async"`.
 - Use `figure` with `figcaption` for captioned self-contained content, not as a generic image wrapper.
-- Autoplay video only when it is `muted` and `playsinline`.
+- Autoplay video only when it is `muted` and `playsinline`; never autoplay audio.
 - Provide captions and transcripts for audio and video content.
 - Give content that moves, blinks, scrolls or plays automatically for more than five seconds a way to pause, stop or hide it.
 
 ## Resources and metadata
 
-- Use external scripts.
+- Use external scripts and external stylesheets, and no `<style>` element.
 - Load ES modules with `type="module"`, which defers them.
 - Use `defer` for classic scripts that need the DOM and `async` only for independent ones.
 - Without a bundler, declare an inline import map, which cannot be external, before any module that uses bare specifiers.
 - Never add inline event handlers.
 - Add `crossorigin` to cross-origin resources that use Subresource Integrity.
 - Sandbox third-party iframes with the fewest permissions they need.
-- Keep `<meta charset="utf-8">` within the first 1024 bytes of the document.
+- Write text directly in UTF-8 and declare it with `<meta charset="utf-8">` within the first 1024 bytes of the document.
+- Use named character references where the syntax requires them, such as `&amp;`, `&lt;` and `&quot;` in attributes, for invisible characters such as `&nbsp;` and `&shy;` and for symbols such as `&copy;` where they read more clearly than the character.
+- Use `<meta name="viewport" content="width=device-width">` without `initial-scale=1`.
+- Never disable zoom with `user-scalable=no` or `maximum-scale`.
 - Add canonical URLs, robots directives, social metadata or structured data only when required.
 - Add `preload`, `preconnect` and `dns-prefetch` only for demonstrated needs.
 - Never `preconnect` same-origin resources or preload resources not needed early.

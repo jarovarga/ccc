@@ -4,7 +4,7 @@
 
 It has three goals. Sessions cost fewer tokens. Claude cannot read secrets or rewrite Git history. And it behaves the same on every machine, which is why every value in `settings.json` is set explicitly, even where it matches today's default. Defaults change between releases.
 
-Nothing in here is tied to a project, a framework or personal taste. Those things belong in the project, and [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
+Apart from British English (see [Instructions](#instructions)), nothing that loads on its own is tied to a project, a framework or personal taste. Those things belong in the project or in `opt-in/`, which holds the author's own conventions and framework setups and never loads on its own, and [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
 
 ## Contents
 
@@ -16,18 +16,19 @@ Nothing in here is tied to a project, a framework or personal taste. Those thing
 | `rules/agent.md`, `rules/code.md`, `rules/git.md`, `rules/security.md` | General rules, loaded in every session. |
 | `rules/instructions.md` | Rules for writing agent instructions, loaded only for instruction files. |
 | `rules/stack/` | One file per language or tool, loaded only for matching files. |
+| `opt-in/` | Optional rules and settings to copy into a project; never installed into `~/.claude/`. |
 
 ## Requirements
 
 - Claude Code 2.1.261 or later. `bashOutputMaxChars` needs it, and `minimumVersion` stops auto-updates from going below it.
 - macOS. The sandbox uses Seatbelt and `network.allowLocalBinding` only does something there. Linux is untested.
-- [RTK](https://www.rtk-ai.app/) on `PATH` (`brew install rtk`). The settings register a hook that calls `rtk hook claude`, and without RTK that hook fails on every Bash call.
+- [RTK](https://rtk-ai.app) on `PATH` (`brew install rtk`). The settings register a hook that calls `rtk hook claude`, and without RTK that hook fails on every Bash call.
 - [ripgrep](https://github.com/BurntSushi/ripgrep), because `CLAUDE.md` tells Claude to search with `rg`.
-- The [GitHub CLI](https://cli.github.com/) and [ShellCheck](https://www.shellcheck.net/) are optional. They get used if they are there.
+- The [GitHub CLI](https://cli.github.com) and [ShellCheck](https://shellcheck.net) are optional. They get used if they are there.
 
 ## After installation
 
-Everything goes into `~/.claude/`, as user configuration. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
+Everything except `opt-in/` goes into `~/.claude/`, as user configuration. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
 
 Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check three things:
 
@@ -212,7 +213,8 @@ The final section tells Claude what to keep when a long conversation is summaris
 
 ## Rules
 
-Every rule is one short imperative line, and it lives in exactly one file.
+Every rule is one imperative line in one file. A stack rule can narrow a general rule for its language, such as the pinned images of `docker.md`, and a framework rule can replace a stack rule.
+
 ### General rules
 
 These four load in every session.
@@ -244,15 +246,26 @@ The files in `rules/stack/` have `paths` frontmatter, so they cost nothing until
 A few things to know about them:
 
 - A rule that needs a minimum version says so, such as (8.4+) in `php.md` or (18+) in `postgresql.md`, and only applies when the project targets that version.
-- `css.md`, `html.md` and `javascript.md` assume features that are [Baseline](https://web.dev/baseline) Widely available, unless the project declares other browser support.
+- `css.md`, `html.md` and `javascript.md` assume features that are [Baseline](https://developer.mozilla.org/docs/Glossary/Baseline/Compatibility) Widely available, unless the project declares other browser support.
 - A stack rule loads when Claude reads a matching file with the Read tool, not when a command such as `cat` reads it (see [Instructions](#instructions)).
 - The patterns match file names and extensions, not the directories of some project layout. So `html.md` does not load for templates written in PHP, and `postgresql.md` does not load for migrations written in another language. If a project needs that, widen `paths`, for example with `templates/**/*.php` or `**/migrations/**`.
 
-Naming methodologies, formatting taste and library choices are left out. Keep them in `LOCAL.md` or in the project.
+Naming methodologies, formatting taste and library choices are left out of the stack rules. The author's own, such as BEM naming of classes, are in `opt-in/conventions/`; keep yours in `LOCAL.md` or in the project.
+
+### Opt-in rules
+
+`opt-in/` holds rules and settings that fit only some projects: conventions and framework setups. A project copies what it needs into its own `.claude/`, so they apply to that project alone. They are not under `rules/` and `CLAUDE.md` does not import them, so nothing in them loads on its own. Only `settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` are installed into `~/.claude/`; `opt-in/` never is.
+
+| Path | Holds |
+| --- | --- |
+| `opt-in/conventions/` | One rule file per convention. |
+| `opt-in/frameworks/<framework>/` | `settings.json`, `rules/<framework>.md` and a `README.md` for each framework. |
+
+Everything in `opt-in/` is the author's own rules, kept as a template for writing project rules. See `opt-in/README.md` for how to use them.
 
 ## Per-project settings
 
-These go into the project's `.claude/settings.json`.
+These go into the project's `.claude/settings.json`. Settings for a framework, and the rules that go with them, are in [Opt-in rules](#opt-in-rules).
 
 ```json
 {
@@ -261,7 +274,7 @@ These go into the project's `.claude/settings.json`.
 }
 ```
 
-`claudeMdExcludes` keeps the `CLAUDE.md` files of dependencies from loading, and `symlinkDirectories` saves copying large directories into every worktree.
+`claudeMdExcludes` keeps the `CLAUDE.md` files and rules of dependencies from loading, and `symlinkDirectories` saves copying large directories into every worktree.
 
 Add `ask` rules for dependency changes (`npm install`, `composer require` and so on) and `allow` rules for the linter and test commands.
 

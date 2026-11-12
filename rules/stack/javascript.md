@@ -10,6 +10,9 @@ These rules apply to JavaScript that runs in a browser. Target features that are
 ## Modules and syntax
 
 - Use modern vanilla JavaScript and ES modules unless the project uses CommonJS.
+- Use `const` unless the value is reassigned, and never `var`.
+- Compare with `===` and `!==` only.
+- Use `Number.isFinite`, `Number.isNaN` and `Number.parseFloat`, and `Number.parseInt` with the radix `10`, instead of the global functions.
 - Avoid circular imports.
 - Lazy-load non-critical modules with dynamic `import()`.
 - Use top-level `await` only in modules that nothing depends on.
@@ -84,6 +87,7 @@ These rules apply to JavaScript that runs in a browser. Target features that are
 - Take multiple optional parameters as an options object with defaults.
 - Validate values where invalid input would break behaviour.
 - Build URLs with `URL` and `URLSearchParams`.
+- Use `fetch`, never `XMLHttpRequest`.
 - Wrap `localStorage` and `sessionStorage` access in `try/catch`.
 - Never store secrets in `localStorage` or `sessionStorage`.
 - Check `event.origin` in `message` handlers.

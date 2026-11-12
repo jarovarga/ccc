@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "claudeMdExcludes": ["**/node_modules/**", "**/vendor/**"],
+
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(npm run format:check)",
+      "Bash(npm run lint*)",
+
+      "Bash(vendor/bin/php-cs-fixer check *)",
+      "Bash(vendor/bin/phpstan *)",
+      "Bash(vendor/bin/phpunit *)",
+
+      "WebFetch(domain:api.cakephp.org)",
+      "WebFetch(domain:book.cakephp.org)",
+      "WebFetch(domain:php.net)",
+      "WebFetch(domain:postgresql.org)"
+    ],
+
+    "ask": [
+      "Bash(bin/cake bake *)",
+      "Bash(bin/cake cache *)",
+      "Bash(bin/cake migrations *)",
+
+      "Bash(composer install *)",
+      "Bash(composer remove *)",
+      "Bash(composer require *)",
+      "Bash(composer update *)",
+
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm update *)"
+    ],
+
+    "deny": [
+      "Edit(**/.npmrc)",
+      "Read(**/.npmrc)",
+
+      "Edit(**/auth.json)",
+      "Read(**/auth.json)",
+
+      "Edit(/config/app_local.php)",
+      "Read(/config/app_local.php)"
+    ]
+  },
+
+  "sandbox": {
+    "credentials": {
+      "files": [{ "mode": "deny", "path": "./config/app_local.php" }]
+    }
+  },
+
+  "worktree": {
+    "symlinkDirectories": ["node_modules", "vendor"]
+  }
+}

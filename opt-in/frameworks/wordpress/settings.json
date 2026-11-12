@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "claudeMdExcludes": ["**/node_modules/**", "**/vendor/**"],
+
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(npm run format:check)",
+      "Bash(npm run lint*)",
+
+      "Bash(vendor/bin/phpcs *)",
+      "Bash(vendor/bin/phpstan *)",
+
+      "Bash(wp core version *)",
+      "Bash(wp cron event list *)",
+      "Bash(wp option get *)",
+      "Bash(wp plugin list *)",
+      "Bash(wp rewrite list *)",
+      "Bash(wp theme list *)",
+
+      "WebFetch(domain:developer.wordpress.org)",
+      "WebFetch(domain:make.wordpress.org)",
+      "WebFetch(domain:mariadb.com)",
+      "WebFetch(domain:php.net)"
+    ],
+
+    "ask": [
+      "Bash(wp cache flush *)",
+      "Bash(wp core update *)",
+      "Bash(wp db *)",
+      "Bash(wp eval *)",
+      "Bash(wp eval-file *)",
+      "Bash(wp plugin activate *)",
+      "Bash(wp plugin deactivate *)",
+      "Bash(wp plugin delete *)",
+      "Bash(wp plugin install *)",
+      "Bash(wp plugin update *)",
+      "Bash(wp scaffold *)",
+      "Bash(wp search-replace *)",
+      "Bash(wp theme activate *)",
+      "Bash(wp theme delete *)",
+      "Bash(wp theme install *)",
+      "Bash(wp theme update *)",
+      "Bash(wp transient delete *)",
+
+      "Bash(composer install *)",
+      "Bash(composer remove *)",
+      "Bash(composer require *)",
+      "Bash(composer update *)",
+
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm update *)"
+    ],
+
+    "deny": [
+      "Bash(wp config *)",
+
+      "Edit(**/.npmrc)",
+      "Read(**/.npmrc)",
+
+      "Edit(**/auth.json)",
+      "Read(**/auth.json)",
+
+      "Edit(**/wp-config.php)",
+      "Read(**/wp-config.php)"
+    ]
+  },
+
+  "sandbox": {
+    "credentials": {
+      "files": [{ "mode": "deny", "path": "./wp-config.php" }]
+    }
+  },
+
+  "worktree": {
+    "symlinkDirectories": ["node_modules", "vendor"]
+  }
+}
