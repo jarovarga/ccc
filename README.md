@@ -143,6 +143,8 @@ A command hook runs with full user permissions. Read a hook before adding it.
 
 `defaultMode: "auto"` lets a classifier look at commands and network requests before they run, so ordinary work is not interrupted by prompts. It only works from user settings. `disableBypassPermissionsMode: "disable"` makes `--dangerously-skip-permissions` do nothing.
 
+`blockReadsOutsideWorkingDirectories: true` makes the file tools refuse reads outside the working directories in every permission mode, and the sandbox applies the same block to commands, so a session in one project cannot read another project or anything else in the home directory. The JSON schema at schemastore.org does not list the key yet and an editor flags it as not allowed; Claude Code 2.1.311 reads it. To work on files elsewhere, such as `~/.claude/` itself, start the session there or add the directory with `/add-dir`. A directory that every session needs, such as a notes vault, goes into `permissions.additionalDirectories` in `~/.claude/settings.local.json`, so that the path stays out of this repository.
+
 Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 
 `allow` is almost empty. With the sandbox and `autoAllowBashIfSandboxed`, sandboxed commands run without a prompt already. It only lists two documentation hosts for `WebFetch`, which the sandbox does not cover. When adding more, avoid hosts that serve content written by users.
@@ -160,7 +162,7 @@ Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 - A shell without a command (`bash`, `sh`, `zsh`, with or without `-s`), which is what `curl … | sh` ends in.
 - `env` and `printenv`, so secrets in the environment do not end up in the context.
 - `sudo`.
-- Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, `commit --amend`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
+- Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, forced `branch`, `switch` and `tag`, `commit --amend`, `reflog expire` and `delete`, `tag -d`, `update-ref`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
 - Recursive `rm`.
 - Reading or editing secrets: certificates and keys (`.crt`, `.key`, `.p12`, `.pem`, `.pfx`), environment files (`.env`, `.env.*`, `*.env`, `.envrc`, but not `.env.example`), `.git-credentials`, `.netrc`, `.ssh`, `id_ecdsa*`, `id_ed25519*` and `id_rsa*` keys, `~/.aws` and `~/.gnupg`. Every path has a `Read` and an `Edit` rule; add both for a new path.
 
@@ -174,7 +176,7 @@ Do not mistake these rules for a security boundary. A `deny` rule matches the fo
 | --- | --- | --- |
 | `allowUnsandboxedCommands` | `false` | A command that fails in the sandbox is not retried outside it. |
 | `autoAllowBashIfSandboxed` | `true` | The operating system contains the command, so there is no need to ask. `deny` and `ask` rules still apply. |
-| `credentials.files` | `~/.aws`, `~/.git-credentials`, `~/.gnupg`, `~/.netrc`, `~/.ssh`, each with `"mode": "deny"` | Sandboxed commands cannot read these, including a script that opens files itself, which the `Read` rules do not catch. |
+| `credentials.files` | `~/.aws`, `~/.git-credentials`, `~/.gnupg`, `~/.netrc`, `~/.ssh`, each with `"mode": "deny"` | Sandboxed commands cannot read these. The `Read` deny rules for the same paths are merged into the sandbox already, so this repeats them on purpose: the protection stays if the `Read` rules are ever edited. |
 | `enabled` | `true` | Off by default. Writes stay inside the working directory and there is no direct network access. |
 | `excludedCommands` | `["gh *"]` | Lets the GitHub CLI run outside the sandbox. The `ask` rule still asks every time. |
 | `failIfUnavailable` | `true` | If the sandbox cannot start, Claude Code exits instead of running without it. |
