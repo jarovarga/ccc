@@ -20,7 +20,7 @@ Apart from British English (see [Instructions](#instructions)), nothing that loa
 
 ## Requirements
 
-- Claude Code 2.1.261 or later. `bashOutputMaxChars` needs it, and `minimumVersion` stops auto-updates from going below it.
+- Claude Code 2.1.290 or later. Older versions have holes in `blockReadsOutsideWorkingDirectories` (see [Permissions](#permissions)), and `minimumVersion` stops auto-updates from going below it.
 - macOS. The sandbox uses Seatbelt and `network.allowLocalBinding` only does something there. Linux is untested.
 - [RTK](https://rtk-ai.app) on `PATH` (`brew install rtk`). The settings register a hook that calls `rtk hook claude`, and without RTK that hook fails on every Bash call.
 - [ripgrep](https://github.com/BurntSushi/ripgrep), because `CLAUDE.md` tells Claude to search with `rg`.
@@ -118,7 +118,7 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 | `autoUpdatesChannel` | `stable` | About a week behind, and it skips releases with serious regressions. Homebrew installs ignore this key. |
 | `cleanupPeriodDays` | `14` | Transcripts contain tool output and everything pasted into a session, mistakes included, so they are kept for two weeks instead of the default 30 days. `/resume` and checkpoints expire with them. |
 | `fileCheckpointingEnabled` | `true` | `/rewind` can restore a file to what it was before an edit. |
-| `minimumVersion` | `2.1.261` | Auto-updates never install anything older than the baseline needs. |
+| `minimumVersion` | `2.1.290` | Auto-updates never install anything older than the baseline needs. |
 
 ### Skills
 
@@ -143,7 +143,7 @@ A command hook runs with full user permissions. Read a hook before adding it.
 
 `defaultMode: "auto"` lets a classifier look at commands and network requests before they run, so ordinary work is not interrupted by prompts. It only works from user settings. `disableBypassPermissionsMode: "disable"` makes `--dangerously-skip-permissions` do nothing.
 
-`blockReadsOutsideWorkingDirectories: true` makes the file tools refuse reads outside the working directories in every permission mode, and the sandbox applies the same block to commands, so a session in one project cannot read another project or anything else in the home directory. The JSON schema at schemastore.org does not list the key yet and an editor flags it as not allowed; Claude Code 2.1.311 reads it. To work on files elsewhere, such as `~/.claude/` itself, start the session there or add the directory with `/add-dir`. A directory that every session needs, such as a notes vault, goes into `permissions.additionalDirectories` in `~/.claude/settings.local.json`, so that the path stays out of this repository.
+`blockReadsOutsideWorkingDirectories: true` makes the file tools refuse reads outside the working directories in every permission mode, and the sandbox applies the same block to commands, so a session in one project cannot read another project or anything else in the home directory. The JSON schema at schemastore.org does not list the key yet and an editor flags it as not allowed; Claude Code has read it since 2.1.257. Before 2.1.290, some Bash commands in auto mode and `@`-mentions could still read outside the working directories, so that is the minimum version. To work on files elsewhere, such as `~/.claude/` itself, start the session there or add the directory with `/add-dir`. A directory that every session needs, such as a notes vault, goes into `permissions.additionalDirectories` in `~/.claude/settings.local.json`, so that the path stays out of this repository.
 
 Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 
