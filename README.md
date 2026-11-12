@@ -1,5 +1,14 @@
 # Claude Code configuration
 
+```text
+ ██████╗ ██████╗ ██████╗
+██╔════╝██╔════╝██╔════╝
+██║     ██║     ██║
+██║     ██║     ██║
+╚██████╗╚██████╗╚██████╗
+ ╚═════╝ ╚═════╝ ╚═════╝
+```
+
 `ccc` is a user-level [Claude Code](https://code.claude.com) configuration: pinned settings, a sandbox, lean instructions and binding rules.
 
 It has three goals. Sessions cost fewer tokens. Claude cannot read secrets or rewrite Git history. And it behaves the same on every machine, which is why every value in `settings.json` is set explicitly, even where it matches today's default. Defaults change between releases.
