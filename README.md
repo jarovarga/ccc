@@ -9,11 +9,17 @@
  ╚═════╝ ╚═════╝ ╚═════╝
 ```
 
-`ccc` is a user-level [Claude Code](https://code.claude.com) configuration: pinned settings, a sandbox, lean instructions and binding rules.
+A user-level [Claude Code](https://code.claude.com) config: pinned settings, a required sandbox, lean instructions.
 
-It has three goals. Sessions cost fewer tokens. Claude cannot read secrets or rewrite Git history. And it behaves the same on every machine, which is why every value in `settings.json` is set explicitly, even where it matches today's default. Defaults change between releases.
+- Fewer tokens per session
+- Secrets and Git history out of Claude's reach
+- Same behaviour on every machine
 
-Apart from British English (see [Instructions](#instructions)), nothing that loads on its own is tied to a project, a framework or personal taste. Those things belong in the project or in `opt-in/`, which holds the author's own conventions and framework setups and never loads on its own, and [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
+Nothing project-specific loads by default.
+
+Pinned means that every value in `settings.json` is set explicitly, even where it matches today's default, because defaults change between releases, and that `minimumVersion` sets a floor on the `stable` channel. Claude Code still updates; the version is not frozen. The sandbox is the boundary; [Known limits](#known-limits) lists what the configuration does not cover.
+
+Project and framework conventions, and the author's own taste, belong in the project or in `opt-in/`, which never loads on its own; the one exception is British English (see [Instructions](#instructions)). [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
 
 ## Contents
 
@@ -108,7 +114,7 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 | Key | Value | Why |
 | --- | --- | --- |
 | `disableClaudeAiConnectors` | `true` | No MCP connectors pulled in from claude.ai. They are unreviewed, and their tool definitions take up context. |
-| `enableArtifact` | `false` | Turns the Artifact tool off, so a session cannot publish anything to claude.ai. |
+| `enableArtifact` | `false` | Turns the Artifact tool off, so a session cannot publish artifacts to claude.ai. |
 | `remoteControlAtStartup` | `false` | A session is never exposed remotely by default. Left unset, the organisation default applies. |
 | `syncClaudeAiSkills` | `false` | A new machine gets the skills from this configuration and nothing from the account. A repository cannot switch this off, so it has to be in user settings. |
 
@@ -127,7 +133,7 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 | `autoUpdatesChannel` | `stable` | About a week behind, and it skips releases with serious regressions. Homebrew installs ignore this key. |
 | `cleanupPeriodDays` | `14` | Transcripts contain tool output and everything pasted into a session, mistakes included, so they are kept for two weeks instead of the default 30 days. `/resume` and checkpoints expire with them. |
 | `fileCheckpointingEnabled` | `true` | `/rewind` can restore a file to what it was before an edit. |
-| `minimumVersion` | `2.1.290` | Auto-updates never install anything older than the baseline needs. |
+| `minimumVersion` | `2.1.290` | Auto-updates do not go below the version the baseline needs; newer versions still install. |
 
 ### Skills
 
@@ -152,7 +158,7 @@ A command hook runs with full user permissions. Read a hook before adding it.
 
 `defaultMode: "auto"` lets a classifier look at commands and network requests before they run, so ordinary work is not interrupted by prompts. It only works from user settings. `disableBypassPermissionsMode: "disable"` makes `--dangerously-skip-permissions` do nothing.
 
-`blockReadsOutsideWorkingDirectories: true` makes the file tools refuse reads outside the working directories in every permission mode, and the sandbox applies the same block to commands, so a session in one project cannot read another project or anything else in the home directory. The JSON schema at schemastore.org does not list the key yet and an editor flags it as not allowed; Claude Code has read it since 2.1.257. Before 2.1.290, some Bash commands in auto mode and `@`-mentions could still read outside the working directories, so that is the minimum version. To work on files elsewhere, such as `~/.claude/` itself, start the session there or add the directory with `/add-dir`. A directory that every session needs, such as a notes vault, goes into `permissions.additionalDirectories` in `~/.claude/settings.local.json`, so that the path stays out of this repository.
+`blockReadsOutsideWorkingDirectories: true` makes the file tools refuse reads outside the working directories in every permission mode, and the sandbox applies the same block to commands, so a session in one project does not read another project or the rest of the home directory, apart from directories added with `/add-dir` or `additionalDirectories` and commands excluded from the sandbox, such as `gh`. The JSON schema at schemastore.org does not list the key yet and an editor flags it as not allowed; Claude Code has read it since 2.1.257. Before 2.1.290, some Bash commands in auto mode and `@`-mentions could still read outside the working directories, so that is the minimum version. To work on files elsewhere, such as `~/.claude/` itself, start the session there or add the directory with `/add-dir`. A directory that every session needs, such as a notes vault, goes into `permissions.additionalDirectories` in `~/.claude/settings.local.json`, so that the path stays out of this repository.
 
 Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 
@@ -169,7 +175,7 @@ Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 `deny` cannot be approved at all:
 
 - A shell without a command (`bash`, `sh`, `zsh`, with or without `-s`), which is what `curl … | sh` ends in.
-- `env` and `printenv`, so secrets in the environment do not end up in the context.
+- `env` and `printenv`, so secrets in the environment do not end up in the context by the usual route (see [Known limits](#known-limits)).
 - `sudo`.
 - Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, forced `branch`, `switch` and `tag`, `commit --amend`, `reflog expire` and `delete`, `tag -d`, `update-ref`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
 - Recursive `rm`.
@@ -204,7 +210,7 @@ Do not mistake these rules for a security boundary. A `deny` rule matches the fo
 
 Most of it is about context: search the narrowest path first, keep command output small, batch calls, and suggest a new conversation when a request has nothing to do with the current one. All of that keeps the context small, and the context is resent on every turn.
 
-It also makes the files in `~/.claude/rules/` binding, so a task or a project cannot talk Claude out of the security and Git rules. There are two exceptions. A rule can defer to the project, as the rules do for commit conventions, formatter settings and the command runner. And a project's framework or coding standard wins over a rule in `rules/stack/`.
+It also makes the files in `~/.claude/rules/` binding and tells Claude that a task or a project does not override the security and Git rules. There are two exceptions. A rule can defer to the project, as the rules do for commit conventions, formatter settings and the command runner. And a project's framework or coding standard wins over a rule in `rules/stack/`.
 
 It asks Claude to read files with the Read tool instead of `cat`, because that is what loads the path-scoped rules.
 
@@ -220,7 +226,7 @@ The final section tells Claude what to keep when a long conversation is summaris
 
 ### Personal instructions
 
-`CLAUDE.md` also imports `LOCAL.md`, which is not in this repository. Put anything personal into `~/.claude/LOCAL.md`: a GitHub account, local paths, personal conventions. Imports in user-level files load without an approval dialog. The `.gitignore` here ignores everything it does not list, so a `LOCAL.md` in a checkout is never committed.
+`CLAUDE.md` also imports `LOCAL.md`, which is not in this repository. Put anything personal into `~/.claude/LOCAL.md`: a GitHub account, local paths, personal conventions. Imports in user-level files load without an approval dialog. The `.gitignore` here ignores everything it does not list, so a `LOCAL.md` in a checkout stays untracked.
 
 A template for `~/.claude/LOCAL.md`. Keep only the sections that apply and replace every `<placeholder>`. The linter configurations are the author's public gists; replace them with your own sources:
 
