@@ -213,6 +213,28 @@ The final section tells Claude what to keep when a long conversation is summaris
 
 `CLAUDE.md` also imports `LOCAL.md`, which is not in this repository. Put anything personal into `~/.claude/LOCAL.md`: a GitHub account, local paths, personal conventions. Imports in user-level files load without an approval dialog. The `.gitignore` here ignores everything it does not list, so a `LOCAL.md` in a checkout is never committed.
 
+A template for `~/.claude/LOCAL.md`. Keep only the sections that apply and replace every `<placeholder>`. The linter configurations are the author's public gists; replace them with your own sources:
+
+```markdown
+# Local
+
+## GitHub
+
+- Use the account `github.com/<account>` and look for local checkouts in `<checkout_path>/<repo>`.
+- Read GitHub (issues, pull requests, gists, the API) with the `gh` CLI, which runs outside the sandbox.
+- Write remote addresses in the SSH form (`git@github.com:<account>/<repo>.git`).
+
+## Linter configurations
+
+When a task or the project instructions ask to add a linter or formatter, start from these public gists, read with `gh gist view <id>`, and adapt their paths to the project; never overwrite a configuration the project already has.
+
+- EditorConfig: `010dbb8f4c0f2252bf794f0ddd226ff3`
+- Prettier: `7a5c1695ec8eeaf78b6e01e3a8dc95e1`
+- HTML-validate: `eaff14156f7ffd1d5a5e9bb86be3c8c7`
+- Stylelint: `454c5a7ae672f7405b23d0e3905c6639`
+- ESLint: `fd9e481fcbd3a31aef8bab713ce7a796`
+```
+
 ## Rules
 
 Every rule is one imperative line in one file. A stack rule can narrow a general rule for its language, such as the pinned images of `docker.md`, and a framework rule can replace a stack rule.
