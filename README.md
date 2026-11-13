@@ -279,7 +279,7 @@ The files in `rules/stack/` have `paths` frontmatter, so they cost nothing until
 | `html.md` | `**/*.{html,twig}` | Semantics, attributes, links and buttons, forms, native widgets, accessibility, media, resources. |
 | `javascript.md` | `**/*.{js,mjs}` | Modules, DOM, events, focus, motion, observers, timing, network. Written for the browser. |
 | `markdown.md` | `**/*.{markdown,md}` | One line per paragraph, headings, inline code, placeholders, code blocks. |
-| `php.md` | `**/*.php` | Types, classes, syntax, the standard library, strings and regular expressions, errors, deprecated forms, security. |
+| `php.md` | `**/*.php` | The fallback coding standard (PER-CS 3.0), types, classes, syntax, the standard library, strings and regular expressions, errors, deprecated forms, security, docblocks. |
 | `postgresql.md` | `**/*.sql` | Types and schema, constraints, indexes, migrations on live tables, queries. |
 
 A few things to know about them:

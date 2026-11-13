@@ -7,6 +7,10 @@ paths:
 
 The target PHP version is the one the project declares in `composer.json` (`require.php`). A rule marked with a minimum version, such as (8.4+), applies from that version.
 
+## Coding standard
+
+- Follow the coding standard the project configures, such as in PHP-CS-Fixer or PHP_CodeSniffer; when it configures none, follow PER-CS 3.0.
+
 ## Files and types
 
 - Start every PHP file with `declare(strict_types=1);`; templates are exempt.
