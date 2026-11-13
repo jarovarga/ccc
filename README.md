@@ -98,6 +98,7 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 | `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` | `1` | Subagents cannot spawn subagents. The default is 3. |
 | `env.CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` | `30` | The default is 200. At the cap Claude is told to carry on with what it has. |
 | `env.CLAUDE_CODE_SUBAGENT_MODEL` | `sonnet` | Subagents run on the cheaper model unless their definition says otherwise. |
+| `env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | `1` | Removes credentials, recognised by variable name or value, from the environment of Bash commands, hooks and stdio MCP servers, so `export -p` and similar have less to show. GitHub tokens and proxy settings stay. A tool that needs a removed variable, such as `DATABASE_URL` with a password, does not get it. |
 | `env.MAX_MCP_OUTPUT_TOKENS` | `10000` | Limit for one MCP tool response. The default is 25,000 tokens. |
 
 ### Features that spend tokens or act unattended
@@ -167,7 +168,7 @@ Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 `ask` is for things that should not happen silently:
 
 - `gh`, because it runs outside the sandbox (see [Sandbox](#sandbox)).
-- Broad staging (`git add --all`, `-A`, `--update`, `-u`, `.`), `git checkout`, `git commit`, `git rm`, `git stash clear` and `git stash drop`.
+- Broad staging (`git add --all`, `-A`, `--update`, `-u`, `.`), `git checkout`, `git commit`, `git rm`, `git stash clear` and `git stash drop`, each also as `git -C <path>`.
 - `rm`.
 - Edits to Claude's own configuration: `.claude/`, `.mcp.json` and `.gitignore` in the project, and in `~/.claude/` the Markdown files, settings, `agents`, `commands`, `hooks`, `rules` and `skills`, plus `~/.claude.json`.
 - `WebSearch`, because the query leaves the machine.
@@ -175,9 +176,9 @@ Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 `deny` cannot be approved at all:
 
 - A shell without a command (`bash`, `sh`, `zsh`, with or without `-s`), which is what `curl … | sh` ends in.
-- `env` and `printenv`, so secrets in the environment do not end up in the context by the usual route (see [Known limits](#known-limits)).
+- `env` and `printenv`, so secrets in the environment do not end up in the context by the usual route. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` removes most of them from the environment in the first place (see [Known limits](#known-limits)).
 - `sudo`.
-- Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, forced `branch`, `switch` and `tag`, `commit --amend`, `reflog expire` and `delete`, `tag -d`, `update-ref`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
+- Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, forced `branch`, `switch` and `tag`, `commit --amend`, `reflog expire` and `delete`, `gc --prune`, `prune`, `tag -d`, `update-ref`, forced `worktree remove`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
 - Recursive `rm`.
 - Reading or editing secrets: certificates and keys (`.crt`, `.key`, `.p12`, `.pem`, `.pfx`), environment files (`.env`, `.env.*`, `*.env`, `.envrc`, but not `.env.example`), `.git-credentials`, `.netrc`, `.ssh`, `id_ecdsa*`, `id_ed25519*` and `id_rsa*` keys, `~/.aws` and `~/.gnupg`. Every path has a `Read` and an `Edit` rule; add both for a new path.
 
@@ -195,7 +196,7 @@ Do not mistake these rules for a security boundary. A `deny` rule matches the fo
 | `enabled` | `true` | Off by default. Writes stay inside the working directory and there is no direct network access. |
 | `excludedCommands` | `["gh *"]` | Lets the GitHub CLI run outside the sandbox. The `ask` rule still asks every time. |
 | `failIfUnavailable` | `true` | If the sandbox cannot start, Claude Code exits instead of running without it. |
-| `network.allowLocalBinding` | `true` | Development servers and tests can listen on ports. Set it to `false` where that is not needed. macOS only. |
+| `network.allowLocalBinding` | `false` | `true` lets development servers and tests listen on ports, but it also lets sandboxed commands connect to any port on localhost, so every local service without authentication (a database, the Docker API, a debugger) is within reach. Enable it per project (see [Per-project settings](#per-project-settings)). macOS only. |
 
 ### Worktrees
 
@@ -315,6 +316,8 @@ These go into the project's `.claude/settings.json`. Settings for a framework, a
 
 `claudeMdExcludes` keeps the `CLAUDE.md` files and rules of dependencies from loading, and `symlinkDirectories` saves copying large directories into every worktree.
 
+A project whose development server or tests listen on a port needs `"sandbox": { "network": { "allowLocalBinding": true } }`, which also opens every other port on localhost to sandboxed commands.
+
 Add `ask` rules for dependency changes (`npm install`, `composer require` and so on) and `allow` rules for the linter and test commands.
 
 The baseline only protects credentials whose location does not depend on a tool. Add the ones the project's tools use to `permissions.deny`, for both `Read` and `Edit`, and to `sandbox.credentials.files`: `.npmrc`, Composer's `auth.json`, `~/.kube/config`, `~/.docker/config.json`, `~/.config/gh/**`, `~/.config/gcloud/**`, `.pgpass`. Secret environment variables go under `sandbox.credentials.envVars`, which unsets them before each sandboxed command.
@@ -355,7 +358,7 @@ Some Compose commands print secrets. `docker compose config` shows the values ta
 - Checkpoints only track edits made with Claude's file tools. A file changed by a Bash command alone (`sed -i`, a script) is not tracked, so use Git for that. Only the 100 most recent checkpoints of a session keep snapshots.
 - `Read` deny rules apply to the Read tool, to commands that name a file, such as `cat`, and to redirects. They do not apply to `grep -r` or to a script that opens files itself. The sandbox handles those.
 - The `**/` credential patterns in `deny` are relative to the project. Files in other projects are protected only by the sandbox and by the `~/` patterns.
-- The environment can still be printed without `env` or `printenv`, for example with `export -p`.
+- The environment can still be printed without `env` or `printenv`, for example with `export -p`. The scrub only removes variables whose name or value looks like a credential, and it keeps GitHub tokens.
 - Not every combination of short Git flags is caught, for example `-amn` for `commit -n`.
 - With `includeGitInstructions` off, commit and pull request behaviour depends entirely on `rules/git.md`. Replace it with an equivalent before removing it.
 - Untested: what happens when `rtk` is missing, and a signed commit with `~/.gnupg` denied in the sandbox.

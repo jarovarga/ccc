@@ -70,6 +70,7 @@
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
     "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "30",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1",
     "MAX_MCP_OUTPUT_TOKENS": "10000"
   },
 
@@ -101,6 +102,16 @@
     "ask": [
       "Bash(gh *)",
 
+      "Bash(git -C * add --all *)",
+      "Bash(git -C * add --update *)",
+      "Bash(git -C * add -A *)",
+      "Bash(git -C * add -u *)",
+      "Bash(git -C * add . *)",
+      "Bash(git -C * checkout *)",
+      "Bash(git -C * commit *)",
+      "Bash(git -C * rm *)",
+      "Bash(git -C * stash clear*)",
+      "Bash(git -C * stash drop*)",
       "Bash(git add --all *)",
       "Bash(git add --update *)",
       "Bash(git add -A *)",
@@ -149,6 +160,8 @@
       "Bash(git -C * commit -n*)",
       "Bash(git -C * config *core.*)",
       "Bash(git -C * filter-branch*)",
+      "Bash(git -C * gc *--prune*)",
+      "Bash(git -C * prune*)",
       "Bash(git -C * push*)",
       "Bash(git -C * rebase*)",
       "Bash(git -C * reflog delete*)",
@@ -164,6 +177,8 @@
       "Bash(git -C * tag -d*)",
       "Bash(git -C * tag -f*)",
       "Bash(git -C * update-ref*)",
+      "Bash(git -C * worktree remove *--force*)",
+      "Bash(git -C * worktree remove -f*)",
       "Bash(git -c *)",
       "Bash(git branch *--force*)",
       "Bash(git branch -C*)",
@@ -178,6 +193,8 @@
       "Bash(git commit -n*)",
       "Bash(git config *core.*)",
       "Bash(git filter-branch *)",
+      "Bash(git gc *--prune*)",
+      "Bash(git prune*)",
       "Bash(git push *)",
       "Bash(git rebase *)",
       "Bash(git reflog delete*)",
@@ -193,6 +210,8 @@
       "Bash(git tag -d*)",
       "Bash(git tag -f*)",
       "Bash(git update-ref *)",
+      "Bash(git worktree remove *--force*)",
+      "Bash(git worktree remove -f*)",
 
       "Bash(printenv*)",
 
@@ -291,7 +310,7 @@
     "excludedCommands": ["gh *"],
     "failIfUnavailable": true,
     "network": {
-      "allowLocalBinding": true
+      "allowLocalBinding": false
     }
   },
 
