@@ -7,7 +7,7 @@
     "allow": [
       "Bash(npm run build)",
       "Bash(npm run format:check)",
-      "Bash(npm run lint*)",
+      "Bash(npm run lint)",
 
       "Bash(vendor/bin/php-cs-fixer check *)",
       "Bash(vendor/bin/phpstan *)",
@@ -22,7 +22,9 @@
     "ask": [
       "Bash(bin/cake bake *)",
       "Bash(bin/cake cache *)",
+      "Bash(bin/cake console *)",
       "Bash(bin/cake migrations *)",
+      "Bash(bin/cake schema_cache *)",
 
       "Bash(composer install *)",
       "Bash(composer remove *)",

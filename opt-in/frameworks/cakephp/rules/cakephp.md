@@ -1,14 +1,15 @@
 ---
 paths:
+  - "config/**/*.php"
+  - "plugins/**/*.php"
   - "src/**/*.php"
   - "templates/**/*.php"
-  - "config/**/*.php"
   - "tests/**/*.php"
 ---
 
 # CakePHP
 
-These rules apply to projects built on CakePHP 5.x.
+These rules apply to projects built on CakePHP 5.x. A rule marked (PostgreSQL) applies where the project's database is PostgreSQL; a minimum version, such as (PostgreSQL 18+), applies from that version.
 
 ## Framework equivalents
 
@@ -19,6 +20,8 @@ These rules apply to projects built on CakePHP 5.x.
   - `$request->getData()` with validators instead of `filter_input()`;
   - the `Cache` class instead of a direct Redis or Memcached client;
   - `Cake\I18n\DateTime` and `Date` instead of `DateTimeImmutable`;
+  - `DateTime::now()` instead of an injected PSR-20 `ClockInterface`;
+  - entity accessors and mutators (`_getX()`, `_setX()`) instead of property hooks on entity fields;
   - `Cake\Http\Client` with a timeout instead of cURL;
   - `Log` instead of `error_log()`.
 - Hash passwords with the Authentication plugin's `DefaultPasswordHasher` when the plugin is installed.
@@ -45,8 +48,8 @@ These rules apply to projects built on CakePHP 5.x.
 - Layer the code as controller → service → table.
 - Return `void` from an action, or `?Response` when it redirects.
 - Keep controllers thin: handle the request, authorisation and response only, and delegate business logic to services, tables and entities.
-- Catch a broad `Exception`, never `\Throwable`, only in controller actions, to log it and flash a generic message.
-- Leave `\Throwable` to CakePHP's error handler at the entry point.
+- In controller actions, catch only the specific exceptions that the action can handle, to log them and flash a generic message.
+- Leave all other exceptions, including `RecordNotFoundException` and HTTP exceptions, to CakePHP's error handler at the entry point, so that they keep their status codes.
 - Place services in `App\Service`:
   - in `Domain` one per table for the services that wrap one data source;
   - in `Feature` the services that coordinate several of those;
@@ -54,10 +57,10 @@ These rules apply to projects built on CakePHP 5.x.
   - split the services over one table by audience or concern:
     - `UsersService` for managing users as an admin;
     - `ProfileService` for the signed-in user editing their own profile.
-- Make the services that wrap one data source `final`.
 - Make calculators stateless and have them implement an interface.
 - Put each service interface in a `Contract/` directory beside the implementation and type against it.
 - Keep services stateless: never store per-call state on a shared instance.
+- Do not mark a class that extends a CakePHP class `readonly`, because a readonly class cannot extend a non-readonly parent.
 - Pass associations as arguments, such as `get($id, contain: [...])`.
 - Never keep a fluent `contain()` list on a shared service.
 - Register event listeners in `Application::events()`, not in `bootstrap()`.
@@ -77,14 +80,15 @@ These rules apply to projects built on CakePHP 5.x.
 
 ## ORM and queries
 
-- Use UUID primary keys.
+- Use integer primary keys.
+- When a table needs UUID keys, generate UUIDv7 in the database (PostgreSQL 18+): default the column to `uuidv7()` and override `Table::_newId()` in the base table to return `null`, so that the ORM does not send a v4 UUID.
 - Put repeated query conditions in custom finders on the table.
 - Load associations with `contain()` instead of querying in loops; filter by an association with `matching()` or `innerJoinWith()`.
 - Fetch required records with `get()` or `firstOrFail()` so that a missing record becomes a 404.
 - Check the result of `save()` and `delete()`, or use `saveOrFail()` and `deleteOrFail()` in services.
 - Put data-shape validation in `validationDefault()` and rules that need the database, such as `isUnique()` and `existsIn()`, in `buildRules()`.
 - Soft-delete with `is_deleted`, filtered by a custom finder on every public read.
-- Declare `jsonb` columns `array|null` in entity docblocks and normalise empty values with a behaviour.
+- Declare `jsonb` columns (PostgreSQL) `array|null` in entity docblocks and normalise empty values with a behaviour.
 - Validate enum columns with `->enum()`.
 - When writing a slug behaviour, guard a missing source value, generate the slug once and resolve collisions.
 - Use the `Timestamp` behaviour with a nullable `modified`.
@@ -94,9 +98,11 @@ These rules apply to projects built on CakePHP 5.x.
 
 ## Migrations
 
-- Create tables with `['id' => false, 'primary_key' => 'id']` and a `uuid` column defaulting to `Literal::from('uuidv7()')`.
+- Keep the default `id` primary key, which PostgreSQL 10+ creates as an identity column.
+- For UUID keys, create the table with `['id' => false, 'primary_key' => 'id']` and an `id` column of type `uuid` defaulting to `Literal::from('uuidv7()')` (PostgreSQL 18+).
 - Order table columns as `id` where present, data columns, foreign keys, `is_*` flags, `created` (defaulting to `CURRENT_TIMESTAMP`) and `modified`.
-- Declare partial indexes with the `where` option.
+- Declare `created` and `modified` with `'timezone' => true` (PostgreSQL), so that they become `timestamptz`.
+- Declare partial indexes with the `where` option (PostgreSQL).
 
 ## Errors and exceptions
 
@@ -126,6 +132,7 @@ These rules apply to projects built on CakePHP 5.x.
 - Restrict the writable fields per action with the `accessibleFields` option.
 - Pass user input to conditions only as array values or bound parameters; never in condition keys or raw SQL strings.
 - Restrict state-changing actions with `$this->request->allowMethod()` and trigger them with `FormHelper::postLink()` or forms, never plain links.
+- Never use a record id as an unguessable token; generate tokens with `Security::randomString()`.
 - Hide sensitive entity fields, such as password digests and tokens, with `$_hidden`.
 - Never set `'escape' => false` on helper output that contains user data.
 - Keep `CsrfProtectionMiddleware` in the middleware queue and build forms with `FormHelper` so that the token is included.
@@ -134,7 +141,7 @@ These rules apply to projects built on CakePHP 5.x.
 
 ## Templates and routing
 
-- Declare `DashedRoute` routes with explicit HTTP methods, `setPass()` and slugs rather than ids in public URLs.
+- Declare `DashedRoute` routes with explicit HTTP methods, `setPass()` and slugs rather than ids in public URLs, because integer ids are enumerable.
 - Build URLs and links from route arrays or named routes with `HtmlHelper`, `UrlHelper` and `Router::url()`, never hard-coded paths.
 - Wrap user-facing strings in `__()` with English source text and add the project locale's translation.
 - Put `label` first and `type` second in the options of `FormHelper::control()`.
