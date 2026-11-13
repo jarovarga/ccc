@@ -15,7 +15,7 @@ Target the WordPress version the project declares. A rule marked with a minimum 
   - `$wpdb->prepare()` or `WP_Query` instead of raw SQL;
   - `wp_remote_get()` and `wp_remote_post()` instead of cURL;
   - `wp_safe_redirect()` followed by `exit` instead of `header( 'Location: …' )`;
-  - `wp_json_encode()` with `JSON_THROW_ON_ERROR` instead of `json_encode()`;
+  - `wp_json_encode()` instead of `json_encode()`, checking for a `false` return, because `JSON_THROW_ON_ERROR` throws before WordPress can repair the data;
   - `wp_parse_url()` instead of `parse_url()`, `Uri\Rfc3986\Uri` and `Uri\WhatWg\Url`;
   - `wp_delete_file()` instead of `unlink()`;
   - `wp_strip_all_tags()` instead of `strip_tags()`;

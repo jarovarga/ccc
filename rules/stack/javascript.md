@@ -45,7 +45,7 @@ These rules apply to JavaScript that runs in a browser, not to Node.js scripts o
 - Prefer one named handler to a new anonymous function per element.
 - Use delegation only when it simplifies related descendants.
 - Mark high-frequency listeners that never call `preventDefault()` as `{ passive: true }`.
-- `touchstart`, `touchmove` and `wheel` listeners on `window`, `document`, `html` and `body` are passive by default, and `scroll` cannot be cancelled.
+- Do not add `{ passive: true }` to `touchstart`, `touchmove` and `wheel` listeners on `window`, `document`, `html` and `body`, which are passive by default, or to `scroll` listeners, which cannot be cancelled.
 - Call `preventDefault()` only for intentional takeover, so that native browser behaviour is preserved.
 - Keep non-left link clicks and those modified with Ctrl, Meta, Shift or Alt native.
 - Read keys with `event.key`, never `keyCode`.

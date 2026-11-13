@@ -76,7 +76,7 @@ Target features that are Baseline Widely available unless the project declares o
 
 ## Quality
 
-- Set `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
+- Set `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs; `pretty` is Baseline newly available, not widely, and only improves the layout where supported.
 - Prefer local `woff2` fonts and set `font-display` to `swap`.
 - Name the transitioned properties instead of `all`.
 - Do not use `float` for layout.

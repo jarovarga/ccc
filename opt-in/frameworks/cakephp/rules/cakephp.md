@@ -74,7 +74,7 @@ These rules apply to projects built on CakePHP 5.x. A rule marked (PostgreSQL) a
 - Never construct a service or call `fetchTable()` inside a service.
 - Register middleware that has dependencies as a service and add it to the queue by class name.
 - Let the container inject the dependencies of middleware through the constructor.
-- Inject configuration with `#[Configure('Key.path')]` instead of calling `Configure` inside services.
+- Inject configuration (5.3+) with `#[Configure('Key.path')]` instead of calling `Configure` inside services.
 - Bind each interface to a concrete class in one composition root; never bind an interface to an abstract class.
 - Skip services for simple CRUD, entity methods, helpers and validation.
 

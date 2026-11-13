@@ -102,7 +102,7 @@ Target features that are Baseline Widely available unless the project declares o
 - Sandbox third-party iframes with the fewest permissions they need.
 - Write text directly in UTF-8 and declare it with `<meta charset="utf-8">` within the first 1024 bytes of the document.
 - Use named character references where the syntax requires them, such as `&amp;`, `&lt;` and `&quot;` in attributes, for invisible characters such as `&nbsp;` and `&shy;` and for symbols such as `&copy;` where they read more clearly than the character.
-- Use `<meta name="viewport" content="width=device-width">` without `initial-scale=1`.
+- Use `<meta name="viewport" content="width=device-width">` without `initial-scale=1`, because `width=device-width` already starts the page at scale 1 and a fixed initial scale adds nothing.
 - Never disable zoom with `user-scalable=no` or `maximum-scale`.
 - Add canonical URLs, robots directives, social metadata or structured data only when required.
 - Add `preload`, `preconnect` and `dns-prefetch` only for demonstrated needs.

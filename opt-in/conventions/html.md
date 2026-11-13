@@ -17,7 +17,7 @@ paths:
   - the canonical link;
   - the icons: SVG and 96-pixel PNG.
 - Put `<title>` first in `head`, directly followed by the `charset` declaration.
-- Preload the logo and the fonts that the page uses early, and load the stylesheet in `head`.
+- Preload the logo and the fonts only when they delay the first render, and load the stylesheet in `head`.
 - Place the entry script at the end of `body`.
 - Keep every opening and closing tag with all its attributes on one line, even beyond the usual line limit.
 - Do not rely on a formatter for HTML; keep indentation and layout correct by hand.
