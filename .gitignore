@@ -11,5 +11,7 @@
 !/LICENSE
 !/SECURITY.md
 
+!/hooks/
 !/rules/
 !/opt-in/
+!/tests/

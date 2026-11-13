@@ -74,6 +74,7 @@
     "MAX_MCP_OUTPUT_TOKENS": "10000"
   },
 
+  "disableAllHooks": false,
   "hooks": {
     "PreToolUse": [
       {
@@ -82,6 +83,38 @@
           {
             "command": "rtk hook claude",
             "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "~/.claude/hooks/guard-bash.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/block-suppressions.sh",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "~/.claude/hooks/protect-paths.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/log-bash.sh",
+            "timeout": 5,
             "type": "command"
           }
         ]
@@ -143,6 +176,13 @@
     "deny": [
       "Bash(bash -s*)",
       "Bash(bash)",
+
+      "Bash(docker compose down --volumes*)",
+      "Bash(docker compose down -v*)",
+      "Bash(docker system prune*)",
+      "Bash(docker volume prune*)",
+      "Bash(docker volume rm*)",
+      "Bash(docker-compose down -v*)",
 
       "Bash(env)",
 

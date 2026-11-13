@@ -19,13 +19,15 @@ Nothing project-specific loads by default.
 
 Pinned means that every value in `settings.json` is set explicitly, even where it matches today's default, because defaults change between releases, and that `minimumVersion` sets a floor on the `stable` channel. Claude Code still updates; the version is not frozen. The sandbox is the boundary; [Known limits](#known-limits) lists what the configuration does not cover.
 
-Project and framework conventions, and the author's own taste, belong in the project or in `opt-in/`, which never loads on its own; the one exception is British English (see [Instructions](#instructions)). [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
+Project and framework conventions belong in the project or in `opt-in/`, which holds templates and never loads on its own. [Per-project settings](#per-project-settings) shows the usual additions. JSON has no comments, so this README is where the reasoning lives.
 
 ## Contents
 
 | Path | Purpose |
 | --- | --- |
 | `settings.json` | Model, context, permissions, sandbox, hooks and skills. |
+| `hooks/` | The scripts that the hooks in `settings.json` run. |
+| `tests/run.sh` | Runs every hook against sample input and checks its exit code. |
 | `CLAUDE.md` | Instructions loaded in every session. |
 | `RTK.md` | How to work with the RTK hook; imported by `CLAUDE.md`. |
 | `rules/agent.md`, `rules/code.md`, `rules/git.md`, `rules/security.md` | General rules, loaded in every session. |
@@ -45,12 +47,13 @@ Project and framework conventions, and the author's own taste, belong in the pro
   sed -i '' 's/^exclude_commands = \[\]$/exclude_commands = ["gh"]/' "$HOME/Library/Application Support/rtk/config.toml"
   rtk config | grep -A1 '^\[hooks\]'
   ```
+- `jq`, which every hook script uses to read its input. The scripts run under the Bash 3.2 that macOS ships.
 - [ripgrep](https://github.com/BurntSushi/ripgrep), because `CLAUDE.md` tells Claude to search with `rg`.
 - The [GitHub CLI](https://cli.github.com) and [ShellCheck](https://shellcheck.net) are optional. They get used if they are there.
 
 ## After installation
 
-`settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` go into `~/.claude/`, as user configuration. Some commands write to `~/.claude/settings.json` (`/effort`, `/fast`, `/autocompact`), so if it is a symlink to a checkout, those writes end up in the repository. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
+`settings.json`, `CLAUDE.md`, `RTK.md`, `hooks/` and `rules/` go into `~/.claude/`, as user configuration. The hooks are called as `~/.claude/hooks/<name>.sh`, so keep the scripts executable. Some commands write to `~/.claude/settings.json` (`/effort`, `/fast`, `/autocompact`), so if it is a symlink to a checkout, those writes end up in the repository. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
 
 Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check four things:
 
@@ -159,9 +162,26 @@ The setting does not touch plugin skills or skills in `.claude/skills/`.
 
 ### Hooks
 
-There is one hook, `rtk hook claude`, on `PreToolUse` for `Bash`. RTK cuts the boilerplate out of command output and keeps errors and failures. The 10-second timeout is there because a hung hook would otherwise block Bash for 600 seconds.
+Hooks are scripts that Claude Code runs at fixed points. They run outside the sandbox with full user permissions, so read a script before adding it. A hook that exits with 2 blocks the action and its message on stderr goes to Claude, so each message says what to do instead. Any other failure is non-blocking. The scripts are in `hooks/`, need only Bash and `jq`, and cost no context unless they block something.
 
-A command hook runs with full user permissions. Read a hook before adding it.
+| Hook | Runs | Does |
+| --- | --- | --- |
+| `rtk hook claude` | `PreToolUse` for `Bash` | RTK cuts the boilerplate out of command output and keeps errors and failures. |
+| `guard-bash.sh` | `PreToolUse` for `Bash` | Blocks `rm -r` on broad paths (the root, a home directory, `.`, `..`, a bare `*`, a system directory, `$VAR/`), every `git push`, `docker compose down -v`, `docker volume rm` and `prune`, `docker system prune --volumes`, and `DROP DATABASE` or `DROP TABLE` sent to `psql`, `mysql`, `mariadb` or `sqlite3`. |
+| `block-suppressions.sh` | `PreToolUse` for `Edit` and `Write` | Blocks new comments that silence a checker (PHPStan, PHP_CodeSniffer, Stylelint, ESLint, TypeScript, `noqa`) so that Claude fixes the cause. Markdown files are skipped. |
+| `protect-paths.sh` | `PreToolUse` for `Edit` and `Write` | Blocks `vendor/`, `node_modules/`, `composer.lock` and `package-lock.json`. Lock files change through the package manager. Environment files are left to the `deny` rules. |
+| `log-bash.sh` | `PostToolUse` for `Bash` | Appends the time (UTC), working directory and command to `~/.claude/logs/bash.jsonl`. The file is private and common secret forms are redacted on a best-effort basis (assignments, password and token options, URL credentials, authorisation headers, well-known token prefixes), but other forms are not recognised, so the log is not safe to share. It is never rotated. |
+| `bash-patterns.sh` | by hand | `~/.claude/hooks/bash-patterns.sh [count]` lists the most frequent command patterns in the log, so repeated habits such as `python3 -c` or heredocs show up and can become a rule or a permission. |
+
+`guard-bash.sh` reads the structure of the command, not the raw text. Quoted text and heredoc bodies are ignored, so a commit message that mentions `rm -rf` passes, while `$(…)` and backticks are inspected because the shell runs them. It looks through wrappers such as `sudo`, `nice`, `timeout`, `xargs` and `find -exec`, but does not follow `bash -c`, `eval`, scripts or aliases, and an empty pair of quotes inside a word (`g""it`) hides it. The body of an unquoted heredoc is not inspected, `DROP SCHEMA`, `TRUNCATE` and `psql -f` are not recognised, and `block-suppressions.sh` cannot see a suppression swapped for another one in an `Edit`. A hook that cannot run (for example an unwritable `HOME` for the log) fails without blocking. For `rm`, `git push` and Docker it backs up the `deny` rules, which match the text of a command and miss forms such as `/bin/rm`, `xargs rm` or `git --no-pager push`. For SQL and the checks on files it is the only layer. The `deny` rules stay, because a hook that fails does not block.
+
+The 10-second timeouts are there because a hung hook would otherwise block the tool for 600 seconds.
+
+To turn a hook off, delete its entry from `hooks` in `settings.json`, or set `"disableAllHooks": true` (pinned to `false` here) to turn off all of them, `rtk hook claude` included. Deleting the script instead makes the hook fail without blocking, and Claude Code reports a non-blocking error on every call.
+
+Run `tests/run.sh` after changing a script. It feeds each hook sample JSON and compares the exit code (2 blocks, 0 allows).
+
+There is no notification hook. Claude Code already sends desktop notifications in iTerm2, Ghostty and Kitty (`preferredNotifChannel`, see [Optional interface preferences](#optional-interface-preferences)), and a hook that calls `osascript display notification` is attributed to Script Editor, so a click on it opens that app instead of the session.
 
 ### Permissions
 
@@ -184,6 +204,7 @@ Rules are checked in the order `deny`, `ask`, `allow`, and the first match wins.
 `deny` cannot be approved at all:
 
 - A shell without a command (`bash`, `sh`, `zsh`, with or without `-s`), which is what `curl … | sh` ends in.
+- Docker commands that delete volumes: `docker volume rm` and `prune`, `docker system prune`, and `docker compose down -v` or `--volumes`. `guard-bash.sh` covers the other spellings.
 - `env` and `printenv`, so secrets in the environment do not end up in the context by the usual route. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` removes most of them from the environment in the first place (see [Known limits](#known-limits)).
 - `sudo`.
 - Skipping Git hooks (`--no-verify` and its abbreviations, `commit -n`, `core.*` configuration, `git -c`) and Git that rewrites or destroys history (`push`, `reset`, `restore`, `rebase`, `filter-branch`, `clean`, `checkout --`, `branch -D`, forced `branch`, `switch` and `tag`, `commit --amend`, `reflog expire` and `delete`, `gc --prune`, `prune`, `tag -d`, `update-ref`, forced `worktree remove`), each also as `git -C <path>`. Pushing is left to the user, for example with `! git push`.
@@ -223,7 +244,7 @@ It also makes the files in `~/.claude/rules/` binding and tells Claude that a ta
 
 It asks Claude to read files with the Read tool instead of `cat`, because that is what loads the path-scoped rules.
 
-The rest is working conventions: read the README and the configuration before editing, answer in the user's language, and write new documentation, comments and commit messages in British English. That last one is a preference, so change it to taste.
+The rest is working conventions: read the README and the configuration before editing, answer in the user's language, and write new documentation, comments and commit messages in British English.
 
 The final section tells Claude what to keep when a long conversation is summarised.
 
@@ -297,7 +318,7 @@ A few things to know about them:
 - A stack rule loads when Claude reads a matching file with the Read tool, not when a command such as `cat` reads it (see [Instructions](#instructions)).
 - The patterns match file names and extensions, not the directories of some project layout. So `html.md` does not load for templates written in PHP, `postgresql.md` does not load for migrations written in another language, and `bash.md` does not load for scripts without an extension, such as `bin/deploy`. If a project needs that, widen `paths`, for example with `templates/**/*.php` or `**/migrations/**`.
 
-Naming methodologies, formatting taste and library choices are left out of the stack rules. The author's own, such as BEM naming of classes, are in `opt-in/conventions/`; keep yours in `LOCAL.md` or in the project.
+Naming methodologies, formatting styles and library choices are left out of the stack rules. Templates for them, such as BEM naming of classes, are in `opt-in/conventions/`; keep yours in `LOCAL.md` or in the project.
 
 ### Opt-in rules
 
@@ -308,7 +329,7 @@ Naming methodologies, formatting taste and library choices are left out of the s
 | `opt-in/conventions/` | One rule file per convention. |
 | `opt-in/frameworks/<framework>/` | `settings.json`, `rules/<framework>.md` and a `README.md` for each framework. |
 
-Everything in `opt-in/` is the author's own rules, kept as a template for writing project rules. See `opt-in/README.md` for how to use them.
+Everything in `opt-in/`, conventions and frameworks alike, is a template for writing project rules; adapt it before use. See `opt-in/README.md` for how to use them.
 
 ## Per-project settings
 
@@ -368,6 +389,7 @@ Some Compose commands print secrets. `docker compose config` shows the values ta
 - The environment can still be printed without `env` or `printenv`, for example with `export -p`. The scrub only removes variables whose name or value looks like a credential, and it keeps GitHub tokens.
 - Not every combination of short Git flags is caught, for example `-amn` for `commit -n`.
 - With `includeGitInstructions` off, commit and pull request behaviour depends entirely on `rules/git.md`. Replace it with an equivalent before removing it.
+- A project can set `disableAllHooks` in its own settings, which would also switch off the hooks from the user settings. This follows from the order in which Claude Code resolves the key and is not confirmed. Do not trust the hooks in a repository under someone else's control.
 - Untested: a signed commit with `~/.gnupg` denied in the sandbox.
 
 ## Licence
