@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # PreToolUse hook for Bash. Blocks recursive deletion of broad paths, git push,
-# Docker commands that destroy volumes, and SQL that drops a database or table.
+# Docker commands that destroy volumes, SQL that drops a database or table, and
+# a call that runs gh together with another command.
+#
+# gh is excluded from the sandbox, but only when every command of the call is gh
+# (see excludedCommands in settings.json). A piped or chained gh stays in the
+# sandbox, where it cannot read its configuration or reach the network.
 #
 # It backs up the permission rules in settings.json: those match the text of a
 # command and miss forms such as /bin/rm, xargs rm or git --no-pager push.
@@ -156,6 +161,8 @@ readonly VARIABLE_ROOT_RE='^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?(/|/\*)$'
 CWD=""
 SQL_CLIENT=0
 SQL_DROP=0
+GH_SEEN=0
+SEGMENT_COUNT=0
 
 deny() {
   printf 'guard-bash: %s\n' "$1" >&2
@@ -429,6 +436,7 @@ check_segment() {
       rm) check_rm "${words[@]:index}" ;;
       git) check_git "${words[@]:index}" ;;
       docker | docker-compose) check_docker "${words[@]:index}" ;;
+      gh) GH_SEEN=1 ;;
       psql | mysql | mariadb | sqlite3) SQL_CLIENT=1 ;;
     esac
   fi
@@ -449,6 +457,8 @@ CWD=$(jq -r '.cwd // empty' <<<"${input}")
 # The working directory by another name: treat $(pwd) and `pwd` as $PWD.
 command=${command//\$(pwd)/\$PWD}
 command=${command//\`pwd\`/\$PWD}
+# A file descriptor redirect such as 2>&1 is not a second command.
+command=${command//>&/>}
 
 code=$(awk "${AWK_PROGRAM}" <<<"${command}")
 # What follows find -exec is a command of its own.
@@ -468,9 +478,14 @@ while IFS= read -r segment; do
     SQL_DROP=0
   fi
   previous_was_pipe=0
+  SEGMENT_COUNT=$((SEGMENT_COUNT + 1))
 
   check_segment "${segment}"
   if ((SQL_CLIENT && SQL_DROP)); then
     deny "the command drops a database or table. Ask the user to run destructive SQL themselves."
   fi
 done <<<"${code}"
+
+if ((GH_SEEN && SEGMENT_COUNT > 1)); then
+  deny "gh shares the call with another command (a pipe, && or ;), so the whole call stays in the sandbox and gh fails there. Run gh alone and filter with --jq, --json or --limit."
+fi

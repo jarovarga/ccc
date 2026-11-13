@@ -209,6 +209,11 @@ bash_case "${BLOCK}" "rm -rf \$(pwd)"
 bash_case "${BLOCK}" "rm -rf \`pwd\`"
 bash_case "${BLOCK}" 'xargs -I {} rm -rf /'
 bash_case "${BLOCK}" 'sudo -E rm -rf /'
+bash_case "${BLOCK}" 'gh repo view owner/repo | head -5'
+bash_case "${BLOCK}" 'gh pr list && gh issue list'
+bash_case "${BLOCK}" 'cd repo; gh pr list'
+bash_case "${BLOCK}" 'gh pr view 1 --json title | jq .title'
+bash_case "${BLOCK}" "echo \"\$(gh api user)\""
 
 # --- guard-bash.sh: allowed --------------------------------------------------
 bash_case "${ALLOW}" 'rm -rf node_modules'
@@ -233,6 +238,10 @@ bash_case "${ALLOW}" 'echo "rm -rf /"'
 bash_case "${ALLOW}" 'echo rm -rf / # a comment'
 bash_case "${ALLOW}" '# rm -rf /'
 bash_case "${ALLOW}" 'grep -r "docker compose down -v" docs'
+bash_case "${ALLOW}" 'gh repo view owner/repo --json description --jq .description'
+bash_case "${ALLOW}" 'gh pr list --limit 5 2>&1'
+bash_case "${ALLOW}" 'gh issue create --title "a | b && c; d" --body "x"'
+bash_case "${ALLOW}" 'echo gh | cat'
 bash_case "${ALLOW}" 'echo "DROP TABLE users"'
 bash_case "${ALLOW}" 'docker compose down'
 bash_case "${ALLOW}" 'docker compose up -d'

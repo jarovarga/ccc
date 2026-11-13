@@ -167,7 +167,7 @@ Hooks are scripts that Claude Code runs at fixed points. They run outside the sa
 | Hook | Runs | Does |
 | --- | --- | --- |
 | `rtk hook claude` | `PreToolUse` for `Bash` | RTK cuts the boilerplate out of command output and keeps errors and failures. |
-| `guard-bash.sh` | `PreToolUse` for `Bash` | Blocks `rm -r` on broad paths (the root, a home directory, `.`, `..`, a bare `*`, a system directory, `$VAR/`), every `git push`, `docker compose down -v`, `docker volume rm` and `prune`, `docker system prune --volumes`, and `DROP DATABASE` or `DROP TABLE` sent to `psql`, `mysql`, `mariadb` or `sqlite3`. |
+| `guard-bash.sh` | `PreToolUse` for `Bash` | Blocks `rm -r` on broad paths (the root, a home directory, `.`, `..`, a bare `*`, a system directory, `$VAR/`), every `git push`, `docker compose down -v`, `docker volume rm` and `prune`, `docker system prune --volumes`, `DROP DATABASE` or `DROP TABLE` sent to `psql`, `mysql`, `mariadb` or `sqlite3`, and a call that runs `gh` together with another command (a pipe, `&&`, `;` or `$(…)`), because `gh` leaves the sandbox only when it is alone in the call. |
 | `block-suppressions.sh` | `PreToolUse` for `Edit`, `Write` and `NotebookEdit` | Blocks new comments that silence a checker (PHPStan, Psalm, PHP_CodeSniffer, Stylelint, ESLint, Biome, TypeScript, `noqa`, `nolint`, ShellCheck, `type: ignore`, Pylint) so that Claude fixes the cause. Markdown files are skipped. |
 | `protect-paths.sh` | `PreToolUse` for `Edit`, `Write` and `NotebookEdit` | Blocks `vendor/`, `node_modules/`, `composer.lock` and `package-lock.json`. Lock files change through the package manager. Environment files are left to the `deny` rules. |
 | `log-bash.sh` | `PostToolUse` and `PostToolUseFailure` for `Bash` | Appends the time (UTC), working directory and command to `~/.claude/logs/bash.jsonl`. The file is private and common secret forms are redacted on a best-effort basis (assignments, password and token options, URL credentials, authorisation headers, well-known token prefixes), but other forms are not recognised, so the log is not safe to share. Past 1 MiB the file moves to `bash.jsonl.1`, replacing the previous copy. |
@@ -294,7 +294,7 @@ These four load in every session.
 | --- | --- |
 | `rules/agent.md` | How the agent works: what it needs permission for, planning, the working tree, debugging, verifying and reporting, review, evidence, communication. |
 | `rules/code.md` | How code is written in any language: formatting, the scope of a change, design, comments, robustness, input and output, accessibility, testing. |
-| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task without interactive commands, pull request descriptions, no attribution, no skipped hooks, remote operations left to the user, `gh` run as a single command so that it stays outside the sandbox. |
+| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task without interactive commands, pull request descriptions, no attribution, no skipped hooks, remote operations left to the user. |
 | `rules/security.md` | Principles, requests, credentials, dependencies, services and files. The principles follow the OWASP Secure Product Design Cheat Sheet. |
 
 `rules/instructions.md` only loads for instruction files: `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, `LOCAL.md`, `RTK.md`, anything in `.claude/` and the Markdown files in `rules/`. It asks for imperative wording and for every requirement to survive when instructions are revised.
