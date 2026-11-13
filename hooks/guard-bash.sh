@@ -57,7 +57,9 @@ END {
       if (c == "\\") { dtext[sp] = dtext[sp] substr(buf, i + 1, 1); i += 2 }
       else if (c == "\"") { w = hasc[sp] ? "" : dtext[sp]; sp--; out = out quoted(w); i++ }
       else if (substr(buf, i, 3) == "$((") { hasc[sp] = 1; i = skip_arithmetic(i + 1) }
-      else if (c == "$" && substr(buf, i + 1, 1) == "(") { hasc[sp] = 1; sp++; kind[sp] = "C"; depth[sp] = 0; out = out "\n"; i += 2 }
+      else if (c == "$" && substr(buf, i + 1, 1) == "(") {
+        hasc[sp] = 1; sp++; kind[sp] = "C"; depth[sp] = 0; out = out "\n"; i += 2
+      }
       else if (c == "`") { hasc[sp] = 1; sp++; kind[sp] = "B"; out = out "\n"; i++ }
       else { dtext[sp] = dtext[sp] c; i++ }
       continue
@@ -148,6 +150,7 @@ readonly AWK_PROGRAM
 
 readonly ASSIGNMENT_RE='^[A-Za-z_][A-Za-z0-9_]*='
 readonly REDIRECT_RE='^[0-9]*[<>]+(.*)$'
+readonly WORKING_DIRECTORY_RE="^\\\$(PWD|\\{PWD\\})\$"
 readonly VARIABLE_ROOT_RE='^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?(/|/\*)$'
 
 CWD=""
@@ -163,16 +166,9 @@ deny() {
 # being the command itself.
 is_wrapper() {
   case $1 in
-    sudo | env | command | nohup | nice | exec | builtin | time | timeout | watch | setsid | xargs | '{' | '!') return 0 ;;
+    sudo | env | command | nohup | nice | exec | builtin | time | timeout) return 0 ;;
+    watch | setsid | xargs | '{' | '!') return 0 ;;
     if | then | else | elif | do | while | until) return 0 ;;
-  esac
-  return 1
-}
-
-# Succeeds for the commands this hook checks, which can sit behind a wrapper.
-is_checked_command() {
-  case ${1##*/} in
-    rm | git | docker | docker-compose | psql | mysql | mariadb | sqlite3) return 0 ;;
   esac
   return 1
 }
@@ -242,7 +238,7 @@ normalise_path() {
 # or a variable followed by a slash, which becomes the root when it is empty.
 is_broad_path() {
   local path=$1 base normalised
-  if [[ ${path} =~ ${VARIABLE_ROOT_RE} ]]; then
+  if [[ ${path} =~ ${VARIABLE_ROOT_RE} || ${path} =~ ${WORKING_DIRECTORY_RE} ]]; then
     return 0
   fi
   base=${path%/}
@@ -348,52 +344,101 @@ check_docker() {
       down) if ((compose)); then down=1; fi ;;
       volume) volume=1 ;;
       system) system=1 ;;
-      rm | remove | prune) if ((volume)); then deny "docker volume ${arg} deletes data permanently. Ask the user to run it."; fi ;;
-      -v) if ((down)); then deny "docker compose down -v deletes the volumes and their data. Run it without -v, or ask the user."; fi ;;
-      --volumes) if ((down || system)); then deny "--volumes deletes the volumes and their data. Run the command without it, or ask the user."; fi ;;
+      rm | remove | prune)
+        if ((volume)); then
+          deny "docker volume ${arg} deletes data permanently. Ask the user to run it."
+        fi
+        ;;
+      -v)
+        if ((down)); then
+          deny "docker compose down -v deletes the volumes and their data. Run it without -v, or ask the user."
+        fi
+        ;;
+      --volumes)
+        if ((down || system)); then
+          deny "--volumes deletes the volumes and their data. Run the command without it, or ask the user."
+        fi
+        ;;
       psql | mysql | mariadb | sqlite3) SQL_CLIENT=1 ;;
     esac
   done
   return 0
 }
 
-# Checks one simple command. Argument: the command as a line of words.
-check_segment() {
-  local -a words=()
-  local count index=0 after_wrapper=0 word
+# Succeeds for the options of a wrapper that take a separate value, such as
+# sudo -u <user> or nice -n <count>.
+is_wrapper_value_option() {
+  case $1 in
+    -u | -g | -n | -C | -s | -d | -I | -L | -P | -S | -a | -k | -h | -R | -U) return 0 ;;
+    --user | --group | --signal | --kill-after | --adjustment | --chdir) return 0 ;;
+    --max-args | --max-procs | --delimiter | --arg-file | --replace) return 0 ;;
+  esac
+  return 1
+}
 
-  read -r -a words <<<"$1"
-  count=${#words[@]}
-  ((count > 0)) || return 0
+# Succeeds for a word that only configures the wrapper in front of it: an option
+# or a number such as the duration of timeout. Anything else is the command.
+is_wrapper_argument() {
+  [[ $1 == -* || $1 =~ ^[0-9][0-9.]*[smhd]?$ ]]
+}
 
-  for ((index = 0; index < count; index++)); do
-    if [[ ${words[index]} == "${SQL_DROP_MARKER}" ]]; then
-      SQL_DROP=1
-    fi
-  done
+# Prints the index of the command a simple command runs, after its leading
+# assignments and wrappers. Arguments: the words of the command.
+command_index() {
+  local count=$# index=0 after_wrapper=0
+  local -a words=("$@")
 
-  index=0
   while ((index < count)); do
-    word=${words[index]}
-    if [[ ${word} =~ ${ASSIGNMENT_RE} ]]; then
+    if [[ ${words[index]} =~ ${ASSIGNMENT_RE} ]]; then
       :
-    elif is_wrapper "${word}"; then
+    elif is_wrapper "${words[index]}"; then
       after_wrapper=1
-    elif ((after_wrapper)) && ! is_checked_command "${word}"; then
-      :
+    elif ((after_wrapper)) && is_wrapper_argument "${words[index]}"; then
+      if is_wrapper_value_option "${words[index]}"; then
+        index=$((index + 1))
+      fi
     else
       break
     fi
     index=$((index + 1))
   done
-  ((index < count)) || return 0
+  printf '%s' "${index}"
+}
 
-  case ${words[index]##*/} in
-    rm) check_rm "${words[@]:index}" ;;
-    git) check_git "${words[@]:index}" ;;
-    docker | docker-compose) check_docker "${words[@]:index}" ;;
-    psql | mysql | mariadb | sqlite3) SQL_CLIENT=1 ;;
-  esac
+# Checks one simple command. Argument: the command as a line of words.
+# SQL_DROP only counts when it comes from the SQL client itself or from a
+# command that feeds it, so a search for "drop table" after the client is allowed.
+check_segment() {
+  local -a words=()
+  local count index word has_marker=0 prior_client=${SQL_CLIENT}
+
+  read -r -a words <<<"$1"
+  count=${#words[@]}
+  ((count > 0)) || return 0
+
+  for word in "${words[@]}"; do
+    if [[ ${word} == "${SQL_DROP_MARKER}" ]]; then
+      has_marker=1
+    fi
+  done
+
+  SQL_CLIENT=0
+  index=$(command_index "${words[@]}")
+  if ((index < count)); then
+    case ${words[index]##*/} in
+      rm) check_rm "${words[@]:index}" ;;
+      git) check_git "${words[@]:index}" ;;
+      docker | docker-compose) check_docker "${words[@]:index}" ;;
+      psql | mysql | mariadb | sqlite3) SQL_CLIENT=1 ;;
+    esac
+  fi
+
+  if ((has_marker && (SQL_CLIENT || !prior_client))); then
+    SQL_DROP=1
+  fi
+  if ((prior_client)); then
+    SQL_CLIENT=1
+  fi
   return 0
 }
 
@@ -401,6 +446,9 @@ input=$(cat)
 command=$(jq -r '.tool_input.command // empty' <<<"${input}")
 CWD=$(jq -r '.cwd // empty' <<<"${input}")
 [[ -n ${command} ]] || exit 0
+# The working directory by another name: treat $(pwd) and `pwd` as $PWD.
+command=${command//\$(pwd)/\$PWD}
+command=${command//\`pwd\`/\$PWD}
 
 code=$(awk "${AWK_PROGRAM}" <<<"${command}")
 # What follows find -exec is a command of its own.

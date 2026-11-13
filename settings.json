@@ -31,7 +31,7 @@
   "autoUpdatesChannel": "stable",
   "cleanupPeriodDays": 14,
   "fileCheckpointingEnabled": true,
-  "minimumVersion": "2.1.290",
+  "minimumVersion": "2.1.295",
 
   "skillOverrides": {
     "claude-api": "on",
@@ -87,13 +87,14 @@
           },
           {
             "command": "~/.claude/hooks/guard-bash.sh",
+            "onFailure": "block",
             "timeout": 10,
             "type": "command"
           }
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|Write|NotebookEdit",
         "hooks": [
           {
             "command": "~/.claude/hooks/block-suppressions.sh",
@@ -109,6 +110,18 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/log-bash.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
       {
         "matcher": "Bash",
         "hooks": [
@@ -182,6 +195,7 @@
       "Bash(docker system prune*)",
       "Bash(docker volume prune*)",
       "Bash(docker volume rm*)",
+      "Bash(docker-compose down --volumes*)",
       "Bash(docker-compose down -v*)",
 
       "Bash(env)",

@@ -26,6 +26,11 @@ readonly NOQA_UPPER='NO''QA'
 readonly SHELLCHECK_OFF='shellcheck ''disable'
 readonly TYPE_IGNORE='type: ''ignore'
 readonly PYLINT_OFF='pylint: ''disable'
+readonly TS_EXPECT='@ts-''expect-error'
+readonly TS_NOCHECK='@ts-''nocheck'
+readonly PSALM_SUPPRESS='@psalm-''suppress'
+readonly NOLINT='no''lint'
+readonly BIOME_IGNORE='biome-''ignore'
 
 passed=0
 failed=0
@@ -66,7 +71,8 @@ path_case() {
 edit_case() {
   local json
   json=$(jq -n --arg file "$2" --arg old "$3" --arg new "$4" \
-    '{hook_event_name: "PreToolUse", tool_name: "Edit", tool_input: {file_path: $file, old_string: $old, new_string: $new}}')
+    '{hook_event_name: "PreToolUse", tool_name: "Edit",
+      tool_input: {file_path: $file, old_string: $old, new_string: $new}}')
   expect "$1" block-suppressions.sh "Edit $2: $4" "${json}"
 }
 
@@ -92,6 +98,11 @@ edit_case "${BLOCK}" /p/a.py "x" "import os  # ${NOQA_UPPER}: F401"
 edit_case "${BLOCK}" /p/a.sh "x" "# ${SHELLCHECK_OFF}=SC2086"
 edit_case "${BLOCK}" /p/a.py "x" "x = 1  # ${TYPE_IGNORE}"
 edit_case "${BLOCK}" /p/a.py "x" "# ${PYLINT_OFF}=unused-import"
+edit_case "${BLOCK}" /p/a.ts "x" "// ${TS_EXPECT}"
+edit_case "${BLOCK}" /p/a.ts "x" "// ${TS_NOCHECK}"
+edit_case "${BLOCK}" /p/a.php "x" "/** ${PSALM_SUPPRESS} MixedAssignment */"
+edit_case "${BLOCK}" /p/a.go "x" "//${NOLINT}:errcheck"
+edit_case "${BLOCK}" /p/a.js "x" "// ${BIOME_IGNORE} lint/suspicious/noExplicitAny: reason"
 edit_case "${ALLOW}" /p/a.ts "// ${TS_IGNORE}"$'\nfoo()' "// ${TS_IGNORE}"$'\nbar()'
 edit_case "${ALLOW}" /p/a.ts "// ${TS_IGNORE}" "const fixed = true;"
 edit_case "${ALLOW}" /p/a.php "x" "echo 1;"
@@ -102,6 +113,13 @@ write_case "${BLOCK}" /p/a.ts "// ${TS_IGNORE}"$'\nfoo()'
 write_case "${BLOCK}" /p/a.py "x = 1  # ${NOQA}"
 write_case "${ALLOW}" /p/a.ts "foo()"
 write_case "${ALLOW}" /p/docs.md "Do not use ${ESLINT_OFF} comments."
+
+notebook_json=$(jq -n --arg source "x = 1  # ${NOQA}" \
+  '{hook_event_name: "PreToolUse", tool_name: "NotebookEdit",
+    tool_input: {notebook_path: "/p/a.ipynb", new_source: $source}}')
+expect "${BLOCK}" block-suppressions.sh "NotebookEdit adds a suppression" "${notebook_json}"
+expect "${BLOCK}" protect-paths.sh "NotebookEdit in node_modules" \
+  '{"cwd":"/p","tool_input":{"notebook_path":"/p/node_modules/a.ipynb"}}'
 
 # --- protect-paths.sh --------------------------------------------------------
 path_case "${BLOCK}" "${PROJECT}/composer.lock"
@@ -185,6 +203,12 @@ bash_case "${BLOCK}" 'cat <<EOF | psql
 drop table users;
 EOF'
 bash_case "${BLOCK}" 'docker exec db psql -c "DROP DATABASE app"'
+bash_case "${BLOCK}" "rm -rf \"\$PWD\""
+bash_case "${BLOCK}" "rm -rf \${PWD}"
+bash_case "${BLOCK}" "rm -rf \$(pwd)"
+bash_case "${BLOCK}" "rm -rf \`pwd\`"
+bash_case "${BLOCK}" 'xargs -I {} rm -rf /'
+bash_case "${BLOCK}" 'sudo -E rm -rf /'
 
 # --- guard-bash.sh: allowed --------------------------------------------------
 bash_case "${ALLOW}" 'rm -rf node_modules'
@@ -222,6 +246,10 @@ bash_case "${ALLOW}" 'docker system prune'
 bash_case "${ALLOW}" 'psql -c "SELECT 1"; git commit -m "drop table"'
 bash_case "${ALLOW}" "echo \$'git push'"
 bash_case "${ALLOW}" 'timeout 5 ls -la'
+bash_case "${ALLOW}" 'psql -c "SELECT 1" | grep "drop table"'
+bash_case "${ALLOW}" 'nohup echo git push'
+bash_case "${ALLOW}" 'timeout 5 grep -r rm -r .'
+bash_case "${ALLOW}" "rm -rf \"\$PWD/build\""
 
 # --- log-bash.sh and bash-patterns.sh ----------------------------------------
 log_json=$(jq -n --arg command 'API_TOKEN=abc123 curl -H "Authorization: Bearer xyz" https://example.test' \
@@ -231,6 +259,11 @@ expect "${ALLOW}" log-bash.sh "writes a second entry" "${log_json}" "HOME=${tmp_
 escaped_json=$(jq -n --arg command 'cat &lt;&lt;EOF &amp;&amp; ls 2&gt;&amp;1' \
   '{hook_event_name: "PostToolUse", tool_name: "Bash", cwd: "/work/project", tool_input: {command: $command}}')
 expect "${ALLOW}" log-bash.sh "writes an escaped command" "${escaped_json}" "HOME=${tmp_home}/escaped"
+failure_json=$(jq -n --arg command 'npm test' \
+  '{hook_event_name: "PostToolUseFailure", tool_name: "Bash", cwd: "/work/project",
+    tool_input: {command: $command, description: "Run test suite"},
+    error: "Exit code 1", is_interrupt: false, duration_ms: 4187}')
+expect "${ALLOW}" log-bash.sh "writes a failed command" "${failure_json}" "HOME=${tmp_home}/failure"
 expect "${ALLOW}" log-bash.sh "ignores a call without a command" '{"tool_input":{}}' "HOME=${tmp_home}"
 
 log_file=${tmp_home}/.claude/logs/bash.jsonl
@@ -250,18 +283,25 @@ log_has() { grep -q -- "$1" "${log_file}"; }
 log_lacks() { ! grep -q -- "$1" "${log_file}"; }
 log_mode() { [[ $(stat -f %Lp "${log_file}") == 600 ]]; }
 log_lines() { [[ $(wc -l <"${log_file}" | tr -d ' ') == 2 ]]; }
+failure_logged() {
+  jq -e 'select(.command == "npm test" and .cwd == "/work/project")' \
+    "${tmp_home}/failure/.claude/logs/bash.jsonl" >/dev/null
+}
 log_fields() { jq -e 'select(.time and .cwd and .command)' "${log_file}" >/dev/null; }
 
 check "log has two entries" log_lines
 check "log lines are JSON with time, cwd and command" log_fields
 check "log keeps the command" log_has 'curl'
+check "failed command is logged with its cwd" failure_logged
 check "log redacts the token assignment" log_lacks 'abc123'
 check "log redacts the bearer token" log_lacks 'xyz'
 check "log file is private" log_mode
 escaped_restored() { [[ $(jq -r .command "${tmp_home}/escaped/.claude/logs/bash.jsonl") == 'cat <<EOF && ls 2>&1' ]]; }
 check "log restores HTML-escaped characters" escaped_restored
 
-secrets_json=$(jq -n --arg command 'API_KEY="my secret value" mysql -phunter2 --password s3cr3t git clone https://user:pw0rd@host/r.git; curl -H "X-Api-Key: k3y" -u x ghp_abcdefghijklmnop' \
+secrets_command='API_KEY="my secret value" mysql -phunter2 --password s3cr3t git clone https://user:pw0rd@host/r.git;'
+secrets_command+=' curl -H "X-Api-Key: k3y" -u x ghp_abcdefghijklmnop'
+secrets_json=$(jq -n --arg command "${secrets_command}" \
   '{hook_event_name: "PostToolUse", tool_name: "Bash", cwd: "/work/project", tool_input: {command: $command}}')
 expect "${ALLOW}" log-bash.sh "writes a command with secrets" "${secrets_json}" "HOME=${tmp_home}/secrets"
 secrets_log=${tmp_home}/secrets/.claude/logs/bash.jsonl
