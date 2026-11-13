@@ -11,3 +11,4 @@
 - Even when a commit is requested, show the files and hunks to be staged and the full commit message first; commit only after approval.
 - Mention unrelated uncommitted work when handing off commits. Never discard local changes or rewrite history merely to tidy the tree.
 - Remote Git operations (clone, fetch, pull, push) do not run in the sandbox; ask the user to run them.
+- Run `gh` as a single command, never batched, piped or chained with `&&` or `;`: a call stays in the sandbox unless every command in it is `gh`, and there `gh` fails on TLS. Filter with `--jq`, `--json` or `--limit` instead.

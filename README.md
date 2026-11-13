@@ -294,7 +294,7 @@ These four load in every session.
 | --- | --- |
 | `rules/agent.md` | How the agent works: what it needs permission for, planning, the working tree, debugging, verifying and reporting, review, evidence, communication. |
 | `rules/code.md` | How code is written in any language: formatting, the scope of a change, design, comments, robustness, input and output, accessibility, testing. |
-| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task without interactive commands, pull request descriptions, no attribution, no skipped hooks, remote operations left to the user. |
+| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task without interactive commands, pull request descriptions, no attribution, no skipped hooks, remote operations left to the user, `gh` run as a single command so that it stays outside the sandbox. |
 | `rules/security.md` | Principles, requests, credentials, dependencies, services and files. The principles follow the OWASP Secure Product Design Cheat Sheet. |
 
 `rules/instructions.md` only loads for instruction files: `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, `LOCAL.md`, `RTK.md`, anything in `.claude/` and the Markdown files in `rules/`. It asks for imperative wording and for every requirement to survive when instructions are revised.

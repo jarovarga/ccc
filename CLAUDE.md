@@ -8,7 +8,7 @@
 - Search the narrowest relevant path before reading: start with file paths, bounded ranges or summaries; expand when accuracy needs detail.
 - Keep command output small. Save large results to a file and return its path with a short summary.
 - Search with `rg` or `rg --files`.
-- Batch related commands in one call and independent searches and reads in one block; keep dependent edits and checks sequential.
+- Batch related commands in one call and independent searches and reads in one block, except `gh`, which runs as a single command; keep dependent edits and checks sequential.
 - Suggest a new conversation when the request is unrelated to a long-running thread and earlier context would not help.
 
 ## Rules
