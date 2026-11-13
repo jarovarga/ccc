@@ -5,7 +5,7 @@ paths:
 
 # HTML
 
-Target features that are Baseline Widely available unless the project declares other browser support; use a newer feature only where the page stays functional without it.
+Target features that are Baseline Widely available unless the project declares other browser support; use a newer feature only where the page stays functional without it. HTML email, which needs table layout and embedded styles, is exempt from the rules on layout tables and stylesheets.
 
 ## Structure and semantics
 
@@ -22,7 +22,7 @@ Target features that are Baseline Widely available unless the project declares o
 - Mark up page regions with landmarks, including `search`.
 - Consider a skip link to `main` when long repeated navigation precedes it; landmarks may suffice for short navigation.
 - Use `ul`, `ol` or `dl` for lists, including navigation menus.
-- Use tables only for tabular data, except for layout in HTML email.
+- Use tables only for tabular data.
 - Give data tables a `caption` where needed.
 - Never use `br` or empty elements for spacing.
 - Use `time` with a machine-readable `datetime` for dates and times.
@@ -44,7 +44,7 @@ Target features that are Baseline Widely available unless the project declares o
 - Do not rely on `<base>`.
 - Do not open external links in new tabs automatically.
 - Write external links over `https://`.
-- Give `target="_blank"` links `rel="noopener"` for older browsers; add `noreferrer` only when the referrer must be hidden.
+- Give `target="_blank"` links `rel="noopener"` only when the project supports browsers that do not imply it; add `noreferrer` only when the referrer must be hidden.
 - Give icon-only controls an `aria-label`.
 - Give an icon-only control that controls other content or toggles `aria-controls`, `aria-expanded` or `aria-pressed`.
 

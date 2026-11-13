@@ -52,7 +52,7 @@ Project and framework conventions, and the author's own taste, belong in the pro
 
 `settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` go into `~/.claude/`, as user configuration. Some commands write to `~/.claude/settings.json` (`/effort`, `/fast`, `/autocompact`), so if it is a symlink to a checkout, those writes end up in the repository. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
 
-Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check three things:
+Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check four things:
 
 1. Run `/skills` and compare the names with `skillOverrides`. They change between versions.
 2. Ask Claude to read a `.env` file and to run `git push`. It must refuse both.
@@ -271,8 +271,8 @@ These four load in every session.
 | --- | --- |
 | `rules/agent.md` | How the agent works: what it needs permission for, planning, the working tree, debugging, verifying and reporting, review, evidence, communication. |
 | `rules/code.md` | How code is written in any language: formatting, the scope of a change, design, comments, robustness, input and output, accessibility, testing. |
-| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task, no attribution, no skipped hooks, remote operations left to the user. |
-| `rules/security.md` | Principles, credentials, dependencies, services and files. The principles follow the OWASP Secure Product Design Cheat Sheet. |
+| `rules/git.md` | Commit only when asked and after approval, stage only what belongs to the task without interactive commands, pull request descriptions, no attribution, no skipped hooks, remote operations left to the user. |
+| `rules/security.md` | Principles, requests, credentials, dependencies, services and files. The principles follow the OWASP Secure Product Design Cheat Sheet. |
 
 `rules/instructions.md` only loads for instruction files: `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, `LOCAL.md`, `RTK.md`, anything in `.claude/` and the Markdown files in `rules/`. It asks for imperative wording and for every requirement to survive when instructions are revised.
 
@@ -282,10 +282,9 @@ The files in `rules/stack/` have `paths` frontmatter, so they cost nothing until
 
 | File | Loads for | Holds |
 | --- | --- | --- |
-| `bash.md` | `**/*.{bash,sh}` | Shell options, quoting, temporary files, secrets, confirmations, ShellCheck. |
+| `bash.md` | `**/*.{bash,sh}` | Shell options, quoting, syntax, temporary files, secrets, confirmations, ShellCheck. |
 | `css.md` | `**/*.css` | Cascade layers, tokens, layout, states and accessibility, hidden content, forced colours, motion, quality. |
-| `docker.md` | `**/Dockerfile*`, `**/*.dockerfile`, `**/.dockerignore`, `**/compose*.{yml,yaml}`, `**/docker-compose*.{yml,yaml}` | Pinned images, build steps, Compose services, health checks, tool services. |
-| `html.md` | `**/*.{html,twig}` | Semantics, attributes, links and buttons, forms, native widgets, accessibility, media, resources. |
+| `docker.md` | `**/Dockerfile*`, `**/*.dockerfile`, `**/.dockerignore`, `**/compose*.{yml,yaml}`, `**/docker-compose*.{yml,yaml}` | Pinned images, build steps, build secrets, non-root users, Compose services, published ports, health checks, tool services. || `html.md` | `**/*.{html,twig}` | Semantics, attributes, links and buttons, forms, native widgets, accessibility, media, resources. |
 | `javascript.md` | `**/*.{js,mjs}` | Modules, DOM, events, focus, motion, observers, timing, network, docblocks. Written for the browser. |
 | `markdown.md` | `**/*.{markdown,md}` | One line per paragraph, headings, inline code, placeholders, code blocks. |
 | `php.md` | `**/*.php` | The fallback coding standard (PER-CS 3.0), types, classes, syntax, the standard library, strings and regular expressions, errors, deprecated forms, security, docblocks. |
@@ -296,7 +295,7 @@ A few things to know about them:
 - A rule that needs a minimum version says so, such as (8.4+) in `php.md` or (18+) in `postgresql.md`, and only applies when the project targets that version.
 - `css.md`, `html.md` and `javascript.md` assume features that are [Baseline](https://developer.mozilla.org/docs/Glossary/Baseline/Compatibility) Widely available, unless the project declares other browser support.
 - A stack rule loads when Claude reads a matching file with the Read tool, not when a command such as `cat` reads it (see [Instructions](#instructions)).
-- The patterns match file names and extensions, not the directories of some project layout. So `html.md` does not load for templates written in PHP, and `postgresql.md` does not load for migrations written in another language. If a project needs that, widen `paths`, for example with `templates/**/*.php` or `**/migrations/**`.
+- The patterns match file names and extensions, not the directories of some project layout. So `html.md` does not load for templates written in PHP, `postgresql.md` does not load for migrations written in another language, and `bash.md` does not load for scripts without an extension, such as `bin/deploy`. If a project needs that, widen `paths`, for example with `templates/**/*.php` or `**/migrations/**`.
 
 Naming methodologies, formatting taste and library choices are left out of the stack rules. The author's own, such as BEM naming of classes, are in `opt-in/conventions/`; keep yours in `LOCAL.md` or in the project.
 

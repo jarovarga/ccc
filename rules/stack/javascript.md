@@ -5,7 +5,7 @@ paths:
 
 # JavaScript
 
-These rules apply to JavaScript that runs in a browser. Target features that are Baseline Widely available unless the project declares other browser support; feature-detect newer APIs, never user agents, and keep a fallback.
+These rules apply to JavaScript that runs in a browser, not to Node.js scripts or tool configuration such as `vite.config.js`. Target features that are Baseline Widely available unless the project declares other browser support; feature-detect newer APIs, never user agents, and keep a fallback.
 
 ## Modules and syntax
 

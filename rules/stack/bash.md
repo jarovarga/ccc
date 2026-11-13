@@ -11,6 +11,10 @@ These rules apply to Bash scripts; keep a script that runs under `sh`, such as i
 - Set `set -o nounset` and `set -o pipefail`.
 - Check failures explicitly and exit with a meaningful exit code.
 - Quote every expansion (`"${var}"`).
+- Use `$(…)` for command substitution, never backticks.
+- Test conditions with `[[ … ]]`.
+- Put `--` before arguments that can start with a hyphen, such as file names.
+- Write errors and diagnostics to stderr.
 - Pass command arguments as arrays, never as concatenated strings.
 - Declare constants `readonly` in `UPPER_SNAKE_CASE`.
 - Declare function variables `local`.

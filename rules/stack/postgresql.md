@@ -16,7 +16,7 @@ These rules apply where the project's database is PostgreSQL. The target version
 - Use `varchar(n)` only when the limit is a real domain rule, such as an email at 254 characters, with application validation equal to the limit.
 - Never use `char(n)`.
 - Use `numeric` or integers, never `money`.
-- Use identity columns, never `serial`.
+- Use `bigint` identity columns, never `serial`.
 - Use `jsonb` for JSON.
 - Generate UUID primary keys with `uuidv7()` (18+), not `gen_random_uuid()`.
 - Write `STORED` or `VIRTUAL` (18+) explicitly on generated columns, because PostgreSQL 18 changed the default to `VIRTUAL`.
@@ -34,12 +34,15 @@ These rules apply where the project's database is PostgreSQL. The target version
 
 - On live tables create indexes with `CREATE INDEX CONCURRENTLY IF NOT EXISTS <name>`, outside a transaction block and in its own migration step.
 - Drop the invalid index that a failed concurrent build leaves before retrying, because `IF NOT EXISTS` skips it.
+- On live tables drop indexes with `DROP INDEX CONCURRENTLY IF EXISTS <name>`, one per statement and outside a transaction block.
+- Index foreign key columns, which PostgreSQL does not index automatically.
 - Use partial indexes for filtered reads.
 
 ## Migrations
 
 - On live tables add `CHECK`, foreign key and `NOT NULL` (18+) constraints as `NOT VALID` and run `VALIDATE CONSTRAINT` in a separate step.
 - Set `lock_timeout` in migrations that take strong locks so that they fail fast instead of queuing behind long transactions.
+- On live tables avoid an `ALTER COLUMN … TYPE` that rewrites the table; add a new column, backfill it and switch over instead.
 
 ## Queries
 

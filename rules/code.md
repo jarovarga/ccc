@@ -50,8 +50,11 @@
 - Store and process times in UTC and convert them only for display; never assume a day has 86,400 seconds.
 - Format dates and numbers through locale-aware APIs, never by manual string replacement.
 - Use Unicode-aware string functions for text that can contain non-ASCII characters.
+- Represent money as integer minor units or a decimal type, never as floating point.
 - Give every network call a timeout and handle its failure explicitly.
+- Retry only idempotent operations, with a bounded number of attempts and backoff.
 - Do not make network calls inside a database transaction.
+- Avoid N+1 queries; load related data in one query or a batch.
 - Catch exceptions only to handle or translate them.
 - Never swallow errors.
 - Check a return value that signals failure explicitly; never rely on truthiness.

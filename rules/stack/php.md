@@ -81,7 +81,8 @@ The target PHP version is the one the project declares in `composer.json` (`requ
 - Compare secrets with `hash_equals()`.
 - Escape HTML with `htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')`.
 - Run external commands with `proc_open()` and an array command, which bypasses the shell; otherwise escape every argument with `escapeshellarg()`.
-- Normalise file paths with `realpath()`.
+- Normalise file paths with `realpath()`, compare its result with `false` and check that it starts with the allowed base directory followed by a directory separator.
+- Mark parameters that receive passwords, tokens or keys `#[\SensitiveParameter]` (8.2+), so that stack traces do not show them.
 
 ## Docblocks
 

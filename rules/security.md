@@ -12,6 +12,12 @@
 - Collect and keep only the personal data that the task needs.
 - Do not weaken or remove a security control of the code to make a feature or test pass; fix the cause or ask.
 
+## Requests
+
+- Check authorisation on the server for every request and for every object it reads or changes, not only for the route.
+- Allow-list the hosts of outgoing requests whose URL comes from input, and the targets of redirects; where any external host must be reachable, block internal and private addresses instead.
+- Validate the type of uploaded files, never trusting the name or declared type, limit their size and store them on another host or outside the web root under generated names.
+
 ## Credentials
 
 - Never read, copy, print or modify credentials, wherever they are:
@@ -36,6 +42,7 @@
 - Pin external artefacts, such as container images and downloaded tools, to an exact version.
 - Run the project's dependency audit after changing dependencies, if the project defines one.
 - Before adding a dependency, check that the package exists in the official registry and is the intended one, by its name and its publisher or repository; never add a package name from memory.
+- Before adding a dependency, check that its licence is compatible with the project and that it is maintained.
 - Do not install, enable or run unreviewed plugins, extensions, servers or downloaded scripts, and never pipe downloaded content into a shell.
 
 ## Services and files
