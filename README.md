@@ -43,7 +43,7 @@ Project and framework conventions, and the author's own taste, belong in the pro
 
 ## After installation
 
-Everything except `opt-in/` goes into `~/.claude/`, as user configuration. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
+`settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` go into `~/.claude/`, as user configuration. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
 
 Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check three things:
 
@@ -210,7 +210,7 @@ Do not mistake these rules for a security boundary. A `deny` rule matches the fo
 
 Most of it is about context: search the narrowest path first, keep command output small, batch calls, and suggest a new conversation when a request has nothing to do with the current one. All of that keeps the context small, and the context is resent on every turn.
 
-It also makes the files in `~/.claude/rules/` binding and tells Claude that a task or a project does not override the security and Git rules. There are two exceptions. A rule can defer to the project, as the rules do for commit conventions, formatter settings and the command runner. And a project's framework or coding standard wins over a rule in `rules/stack/`.
+It also makes the files in `~/.claude/rules/` binding and tells Claude that a task or a project does not override or weaken any of them. There are two exceptions. A rule can defer to the project, as the rules do for commit conventions, formatter settings and the command runner. And a project's framework or coding standard wins over a rule in `rules/stack/`.
 
 It asks Claude to read files with the Read tool instead of `cat`, because that is what loads the path-scoped rules.
 
@@ -277,7 +277,7 @@ The files in `rules/stack/` have `paths` frontmatter, so they cost nothing until
 | `css.md` | `**/*.css` | Cascade layers, tokens, layout, states and accessibility, hidden content, forced colours, motion, quality. |
 | `docker.md` | `**/Dockerfile*`, `**/*.dockerfile`, `**/.dockerignore`, `**/compose*.{yml,yaml}`, `**/docker-compose*.{yml,yaml}` | Pinned images, build steps, Compose services, health checks, tool services. |
 | `html.md` | `**/*.{html,twig}` | Semantics, attributes, links and buttons, forms, native widgets, accessibility, media, resources. |
-| `javascript.md` | `**/*.{js,mjs}` | Modules, DOM, events, focus, motion, observers, timing, network. Written for the browser. |
+| `javascript.md` | `**/*.{js,mjs}` | Modules, DOM, events, focus, motion, observers, timing, network, docblocks. Written for the browser. |
 | `markdown.md` | `**/*.{markdown,md}` | One line per paragraph, headings, inline code, placeholders, code blocks. |
 | `php.md` | `**/*.php` | The fallback coding standard (PER-CS 3.0), types, classes, syntax, the standard library, strings and regular expressions, errors, deprecated forms, security, docblocks. |
 | `postgresql.md` | `**/*.sql` | Types and schema, constraints, indexes, migrations on live tables, queries. |
