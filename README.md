@@ -37,19 +37,27 @@ Project and framework conventions, and the author's own taste, belong in the pro
 
 - Claude Code 2.1.290 or later. Older versions have holes in `blockReadsOutsideWorkingDirectories` (see [Permissions](#permissions)), and `minimumVersion` stops auto-updates from going below it.
 - macOS. The sandbox uses Seatbelt and `network.allowLocalBinding` only does something there. Linux is untested.
-- [RTK](https://rtk-ai.app) on `PATH` (`brew install rtk`). The settings register a hook that calls `rtk hook claude`, and without RTK that hook fails on every Bash call.
+- [RTK](https://rtk-ai.app) on `PATH` (`brew install rtk`). The settings register a hook that calls `rtk hook claude`. Without RTK the hook fails on every Bash call with a non-blocking error, and commands run unfiltered. The hook has no `onFailure: "block"`, because that would stop every Bash call whenever RTK is missing.
+- RTK must leave `gh` alone. It rewrites `gh …` to `rtk gh …`, which no longer matches `excludedCommands`, so `gh` would run in the sandbox without its configuration or the network. Set `exclude_commands = ["gh"]` under `[hooks]` in RTK's `config.toml`. On a machine without that file yet, run this outside Claude Code (or with `!`), because the sandbox blocks writes there; the last command must print `exclude_commands = ["gh"]`:
+
+  ```bash
+  rtk config --create
+  sed -i '' 's/^exclude_commands = \[\]$/exclude_commands = ["gh"]/' "$HOME/Library/Application Support/rtk/config.toml"
+  rtk config | grep -A1 '^\[hooks\]'
+  ```
 - [ripgrep](https://github.com/BurntSushi/ripgrep), because `CLAUDE.md` tells Claude to search with `rg`.
 - The [GitHub CLI](https://cli.github.com) and [ShellCheck](https://shellcheck.net) are optional. They get used if they are there.
 
 ## After installation
 
-`settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` go into `~/.claude/`, as user configuration. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
+`settings.json`, `CLAUDE.md`, `RTK.md` and `rules/` go into `~/.claude/`, as user configuration. Some commands write to `~/.claude/settings.json` (`/effort`, `/fast`, `/autocompact`), so if it is a symlink to a checkout, those writes end up in the repository. A few keys are ignored in project settings (`defaultMode: "auto"`, `autoContinueAtUsageLimit`, `syncClaudeAiSkills`), and a hook should not arrive through a repository anyway.
 
 Create `~/.claude/LOCAL.md`, even an empty one, because `CLAUDE.md` imports it (see [Personal instructions](#personal-instructions)). Then start a new session and check three things:
 
 1. Run `/skills` and compare the names with `skillOverrides`. They change between versions.
 2. Ask Claude to read a `.env` file and to run `git push`. It must refuse both.
 3. Ask Claude to run `printenv`. It must refuse that too, which also shows that the `deny` rules still match after the RTK hook has rewritten the command.
+4. Ask Claude to run `gh auth status`. It must ask first and then report a logged-in account, not `operation not permitted`.
 
 ### Settings outside `settings.json`
 
@@ -81,8 +89,8 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 
 | Key | Value | Why |
 | --- | --- | --- |
-| `effortLevel` | `medium` | Enough thinking for everyday work. Raise it for a hard task with `/effort`. |
-| `fastMode` | `false` | Fast mode costs more per token, so it stays an explicit choice. |
+| `effortLevel` | `medium` | Enough thinking for everyday work. Raise it for one session with `claude --effort high`. Saving a level with `/effort` writes it to `modelSettings`, which then wins over this key for that model. |
+| `fastMode` | `false` | Fast mode costs more per token, so it stays an explicit choice. `/fast` writes `fastMode: true` to the user settings. |
 | `model` | `opusplan` | Opus plans, a cheaper model writes the code. |
 | `switchModelsOnFlag` | `false` | If a safety classifier flags a request, stop and ask instead of quietly switching models. |
 
@@ -125,7 +133,7 @@ The tables follow the blocks of `settings.json`, with keys in alphabetical order
 | --- | --- | --- |
 | `attribution.commit`, `attribution.pr` | `""` | No trailers or credit lines in commits and pull requests. This only empties the default text, so `rules/git.md` forbids them as well. |
 | `attribution.sessionUrl` | `false` | No link to a private claude.ai session. |
-| `includeGitInstructions` | `false` | Removes the built-in commit and pull request instructions from the system prompt. `rules/git.md` replaces them, and it is shorter. |
+| `includeGitInstructions` | `false` | Removes the built-in commit and pull request instructions from the system prompt. `rules/git.md` replaces them, and it is shorter. It also removes the Git status snapshot (branch, `git status`, recent commits) taken at the start of a session, so Claude runs `git status` when it needs it. |
 
 ### Maintenance
 
@@ -194,7 +202,7 @@ Do not mistake these rules for a security boundary. A `deny` rule matches the fo
 | `autoAllowBashIfSandboxed` | `true` | The operating system contains the command, so there is no need to ask. `deny` and `ask` rules still apply. |
 | `credentials.files` | `~/.aws`, `~/.git-credentials`, `~/.gnupg`, `~/.netrc`, `~/.ssh`, each with `"mode": "deny"` | Sandboxed commands cannot read these. The `Read` deny rules for the same paths are merged into the sandbox already, so this repeats them on purpose: the protection stays if the `Read` rules are ever edited. |
 | `enabled` | `true` | Off by default. Writes stay inside the working directory and there is no direct network access. |
-| `excludedCommands` | `["gh *"]` | Lets the GitHub CLI run outside the sandbox. The `ask` rule still asks every time. |
+| `excludedCommands` | `["gh *"]` | Lets the GitHub CLI run outside the sandbox. The `ask` rule still asks every time. Only works with `gh` excluded from RTK (see [Requirements](#requirements)), because the entry is matched against the text of the command. Every command in a call has to match, so `gh … | jq …` stays in the sandbox and fails. |
 | `failIfUnavailable` | `true` | If the sandbox cannot start, Claude Code exits instead of running without it. |
 | `network.allowLocalBinding` | `false` | `true` lets development servers and tests listen on ports, but it also lets sandboxed commands connect to any port on localhost, so every local service without authentication (a database, the Docker API, a debugger) is within reach. Enable it per project (see [Per-project settings](#per-project-settings)). macOS only. |
 
@@ -361,7 +369,7 @@ Some Compose commands print secrets. `docker compose config` shows the values ta
 - The environment can still be printed without `env` or `printenv`, for example with `export -p`. The scrub only removes variables whose name or value looks like a credential, and it keeps GitHub tokens.
 - Not every combination of short Git flags is caught, for example `-amn` for `commit -n`.
 - With `includeGitInstructions` off, commit and pull request behaviour depends entirely on `rules/git.md`. Replace it with an equivalent before removing it.
-- Untested: what happens when `rtk` is missing, and a signed commit with `~/.gnupg` denied in the sandbox.
+- Untested: a signed commit with `~/.gnupg` denied in the sandbox.
 
 ## Licence
 
