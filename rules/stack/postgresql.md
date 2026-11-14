@@ -19,6 +19,7 @@ These rules apply where the project's database is PostgreSQL. The target version
 - Use `bigint` identity columns, never `serial`.
 - Use `jsonb` for JSON.
 - Generate UUID primary keys with `uuidv7()` (18+), not `gen_random_uuid()`.
+- Expose a record through a separate unique `uuid` column beside the `bigint` identity key, instead of making the key a UUID; default that non-key column to `gen_random_uuid()`, because `uuidv7()` reveals the creation time.
 - Write `STORED` or `VIRTUAL` (18+) explicitly on generated columns, because PostgreSQL 18 changed the default to `VIRTUAL`.
 - Prefer generated columns to triggers for derived values.
 

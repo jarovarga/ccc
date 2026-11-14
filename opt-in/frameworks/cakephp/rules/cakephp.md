@@ -82,6 +82,7 @@ These rules apply to projects built on CakePHP 5.x. A rule marked (PostgreSQL) a
 
 - Use integer primary keys.
 - When a table needs UUID keys, generate UUIDv7 in the database (PostgreSQL 18+): default the column to `uuidv7()` and override `Table::_newId()` in the base table to return `null`, so that the ORM does not send a v4 UUID.
+- When a record needs an unguessable public identifier, keep the integer primary key and add a separate unique `uuid` column; look records up by it with a custom finder.
 - Put repeated query conditions in custom finders on the table.
 - Load associations with `contain()` instead of querying in loops; filter by an association with `matching()` or `innerJoinWith()`.
 - Fetch required records with `get()` or `firstOrFail()` so that a missing record becomes a 404.
@@ -100,6 +101,7 @@ These rules apply to projects built on CakePHP 5.x. A rule marked (PostgreSQL) a
 
 - Keep the default `id` primary key, which PostgreSQL 10+ creates as an identity column.
 - For UUID keys, create the table with `['id' => false, 'primary_key' => 'id']` and an `id` column of type `uuid` defaulting to `Literal::from('uuidv7()')` (PostgreSQL 18+).
+- For a public identifier, add a `uuid` column defaulting to `Literal::from('gen_random_uuid()')` with a unique index (PostgreSQL).
 - Order table columns as `id` where present, data columns, foreign keys, `is_*` flags, `created` (defaulting to `CURRENT_TIMESTAMP`) and `modified`.
 - Declare `created` and `modified` with `'timezone' => true` (PostgreSQL), so that they become `timestamptz`.
 - Declare partial indexes with the `where` option (PostgreSQL).
@@ -141,7 +143,7 @@ These rules apply to projects built on CakePHP 5.x. A rule marked (PostgreSQL) a
 
 ## Templates and routing
 
-- Declare `DashedRoute` routes with explicit HTTP methods, `setPass()` and slugs rather than ids in public URLs, because integer ids are enumerable.
+- Declare `DashedRoute` routes with explicit HTTP methods, `setPass()` and slugs or the public `uuid` rather than ids in public URLs, because integer ids are enumerable.
 - Build URLs and links from route arrays or named routes with `HtmlHelper`, `UrlHelper` and `Router::url()`, never hard-coded paths.
 - Wrap user-facing strings in `__()` with English source text and add the project locale's translation.
 - Put `label` first and `type` second in the options of `FormHelper::control()`.
