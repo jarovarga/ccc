@@ -3,15 +3,15 @@
 !/.editorconfig
 !/.gitignore
 
+!/LICENSE
+!/settings.json
+
 !/CLAUDE.md
 !/README.md
 !/RTK.md
-!/settings.json
-
-!/LICENSE
 !/SECURITY.md
 
 !/hooks/
-!/rules/
 !/opt-in/
+!/rules/
 !/tests/
