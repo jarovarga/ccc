@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its older run to save macOS runner
+# minutes; runs on main finish, so that every commit there gets a result.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # The tests run on macOS, the only supported platform, with the Bash 3.2
+  # of /bin/bash; run.sh starts each test with the same Bash. The -latest
+  # images are on purpose: a new image shows platform drift early.
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Bash version
+        run: /bin/bash --version
+      - name: Run the tests with Bash 3.2
+        run: /bin/bash tests/run.sh
+      - name: Show details
+        if: failure() && hashFiles('debug.log') != ''
+        run: cat debug.log
+
+  # ShellCheck is preinstalled on the Ubuntu runner image, not on the macOS one.
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: ShellCheck
+        run: shellcheck -x --source-path=SCRIPTDIR tests/*.sh tests/lib/*.sh
