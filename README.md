@@ -23,12 +23,9 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - A read-only `Explore` agent on Haiku that follows these rules.
 - A `/session` command: `/session save` writes `.sandbox/context.md`, and `/session resume` continues the work from it in a new session.
 
-## Requirements
+## Compatibility
 
-- macOS (27.2.1)
-- [Claude Code](https://code.claude.com) (2.1.330)
-- Bash (3.2)
-- [jq](https://jqlang.org) (1.7)
+Requires Claude Code 2.1.330 or later and at least macOS 15 (Sequoia).
 
 ## Tests
 
