@@ -14,11 +14,14 @@ readonly CONFIG_DIR="${ROOT_DIR}/.sandbox/qa"
 
 mkdir -p -- "${CONFIG_DIR}" || exit 1
 cp -- "${ROOT_DIR}/CLAUDE.md" "${CONFIG_DIR}/" || exit 1
-# A rule or hook removed from the repository must not linger in the copy.
+# A rule, hook or skill removed from the repository must not linger in the
+# copy.
 rm -rf -- "${CONFIG_DIR}/rules" || exit 1
 cp -R -- "${ROOT_DIR}/rules" "${CONFIG_DIR}/" || exit 1
 rm -rf -- "${CONFIG_DIR}/hooks" || exit 1
 cp -R -- "${ROOT_DIR}/hooks" "${CONFIG_DIR}/" || exit 1
+rm -rf -- "${CONFIG_DIR}/skills" || exit 1
+cp -R -- "${ROOT_DIR}/skills" "${CONFIG_DIR}/" || exit 1
 
 # Claude Code also loads CLAUDE.md and rules from every parent of the working
 # directory, which reaches the real ~/.claude; the root CLAUDE.md is already

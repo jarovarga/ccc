@@ -14,6 +14,7 @@
 
 !/hooks
 !/rules
+!/skills
 !/tests
 
 .DS_Store
