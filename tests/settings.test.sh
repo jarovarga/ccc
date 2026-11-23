@@ -12,7 +12,7 @@ begin 'only core keys'
 assert_jq "${CORE}" 'keys == [
   "attribution", "disableClaudeAiConnectors", "disableSkillShellExecution",
   "enableArtifact", "env", "permissions",
-  "remoteControlAtStartup", "respectGitignore", "sandbox"
+  "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine"
 ]'
 assert_jq "${CORE}" '.permissions | keys == [
   "allow", "ask", "blockReadsOutsideWorkingDirectories",

@@ -42,4 +42,6 @@ jobs:
         with:
           persist-credentials: false
       - name: ShellCheck
-        run: shellcheck -x --source-path=SCRIPTDIR tests/*.sh tests/lib/*.sh
+        run: >-
+          shellcheck -x --source-path=SCRIPTDIR
+          tests/*.sh tests/lib/*.sh hooks/*.sh
