@@ -35,6 +35,7 @@ tests/run.sh
 | `limit.test.sh` | The always-loaded instructions stay within the size limit. |
 | `register.test.sh` | Only registered commands run outside the sandbox or skip the prompt. |
 | `settings.test.sh` | The security settings keep their values. |
+| `statusline.test.sh` | The status line shows its fields, glyphs and colours. |
 
 ## Security
 
