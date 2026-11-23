@@ -15,6 +15,14 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 
 ## Tests
 
+Quality assurance in Claude Code with this configuration instead of `~/.claude` (requires `jq`):
+
+```bash
+tests/qa.sh
+```
+
+Automated tests:
+
 ```bash
 tests/run.sh
 ```
