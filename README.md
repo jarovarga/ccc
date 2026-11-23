@@ -13,6 +13,14 @@
 
 A personal, user-level [Claude Code](https://code.claude.com) configuration.
 
+## Features
+
+- A strict sandbox with a closed network and blocked credential files.
+- Permission rules that deny credential reads and destructive Git and file commands, and ask before deletions and configuration edits.
+- No attribution in commits and pull requests.
+- Rules for agent workflow, Git, security and writing instructions.
+- A status line with the model, the effort, the context and rate limit usage, and the session cost (requires `jq`).
+
 ## Tests
 
 Quality assurance in Claude Code with this configuration instead of `~/.claude` (requires `jq`):
