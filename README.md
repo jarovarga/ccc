@@ -20,7 +20,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - No attribution in commits and pull requests.
 - Rules for agent workflow, Git, security and writing instructions.
 - A status line with the model, the effort, the context and rate limit usage, and the session cost (requires `jq`).
-- A `/handoff` command that writes `.sandbox/handoff.md`, so that a new session can continue the work.
+- A `/session` command: `/session save` writes `.sandbox/context.md`, and `/session resume` continues the work from it in a new session.
 
 ## Tests
 
