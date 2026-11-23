@@ -20,6 +20,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - No attribution in commits and pull requests.
 - Rules for agent workflow, Git, security and writing instructions.
 - A status line with the model, the effort, the context and rate limit usage, and the session cost.
+- A read-only `Explore` agent on Haiku that follows these rules.
 - A `/session` command: `/session save` writes `.sandbox/context.md`, and `/session resume` continues the work from it in a new session.
 
 ## Requirements
