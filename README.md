@@ -19,12 +19,19 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - Permission rules that deny credential reads and destructive Git and file commands, and ask before deletions and configuration edits.
 - No attribution in commits and pull requests.
 - Rules for agent workflow, Git, security and writing instructions.
-- A status line with the model, the effort, the context and rate limit usage, and the session cost (requires `jq`).
+- A status line with the model, the effort, the context and rate limit usage, and the session cost.
 - A `/session` command: `/session save` writes `.sandbox/context.md`, and `/session resume` continues the work from it in a new session.
+
+## Requirements
+
+- macOS (27.2.1)
+- [Claude Code](https://code.claude.com) (2.1.330)
+- Bash (3.2)
+- [jq](https://jqlang.org) (1.7)
 
 ## Tests
 
-Quality assurance in Claude Code with this configuration instead of `~/.claude` (requires `jq`):
+Quality assurance in Claude Code with this configuration instead of `~/.claude`:
 
 ```bash
 tests/qa.sh
