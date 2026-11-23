@@ -1,0 +1,8 @@
+# Normalise line endings to LF in the repository and the working tree on
+# every platform; Git detects text files itself and leaves binaries untouched.
+* text=auto eol=lf
+
+# Use language-aware diff drivers, so that hunk headers name the enclosing
+# shell function or Markdown heading instead of an arbitrary preceding line.
+*.sh diff=bash
+*.md diff=markdown
