@@ -12,6 +12,9 @@
 !/README.md
 !/SECURITY.md
 
+!/rules
+!/tests
+
 .DS_Store
 .DS_Store?
 .localized
