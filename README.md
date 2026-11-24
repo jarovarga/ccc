@@ -63,10 +63,12 @@ tests/run.sh
 
 ## Documentation
 
-- [Agents](docs/agents.md): the subagents, with their purpose and frontmatter keys.
-- [Opt-in](docs/opt-in.md): the layout of the optional topics.
-- [Settings](docs/settings.md): every key with its value and effect.
-- [Status line](docs/statusline.md): the fields, glyphs and colours of the status line.
+| Path | Purpose |
+| --- | --- |
+| [docs/agents.md](docs/agents.md) | The subagents, with their purpose and frontmatter keys. |
+| [docs/opt-in.md](docs/opt-in.md) | The layout of the optional topics. |
+| [docs/settings.md](docs/settings.md) | Every key with its value and effect. |
+| [docs/statusline.md](docs/statusline.md) | The fields, glyphs and colours of the status line. |
 
 ## Security
 
