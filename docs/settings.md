@@ -1,0 +1,48 @@
+# Settings
+
+The keys of `settings.json`, in alphabetical order inside each block. The [settings reference](https://code.claude.com/docs/en/settings-reference) describes every key in full.
+
+## General
+
+| Key | Value | Effect |
+| --- | --- | --- |
+| `attribution.commit`, `attribution.pr` | `""` | No attribution text in commits and pull requests. |
+| `attribution.sessionUrl` | `false` | No session link in commits and pull requests. |
+| `disableClaudeAiConnectors` | `true` | No MCP connectors from the claude.ai account. |
+| `disableSkillShellExecution` | `true` | Skills cannot run shell commands on load; bundled ones are unaffected. |
+| `enableArtifact` | `false` | No publishing of artifacts to claude.ai. |
+| `env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | `1` | No credentials in the environment of subprocesses. |
+| `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |
+| `respectGitignore` | `true` | Files that Git ignores stay out of the `@` picker. |
+| `statusLine` | object | The status line described in [docs/statusline.md](statusline.md). |
+
+## Permissions
+
+| Key | Value | Effect |
+| --- | --- | --- |
+| `allow` | array | Actions that run without a prompt. |
+| `ask` | array | Actions that prompt first, such as deletions and configuration edits. |
+| `deny` | array | Actions that are refused, such as reading credentials and rewriting Git history. |
+| `blockReadsOutsideWorkingDirectories` | `true` | No reads outside the working directories. |
+| `blockWritesOutsideWorkingDirectories` | `true` | No edits outside the working directories. |
+| `disableBypassPermissionsMode` | `"disable"` | `--dangerously-skip-permissions` has no effect. |
+
+> [!important]
+> The sandbox is the security boundary. A `deny` rule matches the text of a command, so a form such as `bash -c '…'` or an absolute path to the program gets past it.
+
+> [!tip]
+> To work on files outside the project, add their directory with `/add-dir`.
+
+## Sandbox
+
+| Key | Value | Effect |
+| --- | --- | --- |
+| `allowUnsandboxedCommands` | `false` | A command that fails in the sandbox is not retried outside it. |
+| `autoAllowBashIfSandboxed` | `true` | Sandboxed commands run without a prompt; `ask` and `deny` still apply. |
+| `credentials.files` | array | Sandboxed commands cannot read Git, GnuPG, `netrc` and SSH credentials. |
+| `enabled` | `true` | Bash commands run in the sandbox. |
+| `excludedCommands` | `[]` | No command runs outside the sandbox. |
+| `failIfUnavailable` | `true` | Claude Code exits when the sandbox cannot start. |
+| `filesystem.allowRead` | array | Sandboxed commands can read the user settings. |
+| `filesystem.denyWrite` | array | Sandboxed commands cannot change Git configuration or hooks. |
+| `network.allowedDomains` | `[]` | Sandboxed commands have no network access. |
