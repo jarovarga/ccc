@@ -44,4 +44,5 @@ jobs:
       - name: ShellCheck
         run: >-
           shellcheck -x --source-path=SCRIPTDIR
-          tests/*.sh tests/lib/*.sh hooks/*.sh
+          tests/*.sh tests/lib/*.sh tests/opt-in/*.sh hooks/*.sh
+          opt-in/*/hooks/*.sh

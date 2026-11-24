@@ -33,6 +33,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 | `agents/` | Subagents that replace or extend the built-in ones. |
 | `docs/` | Documentation of the configuration. |
 | `hooks/` | Scripts that Claude Code runs itself, outside the conversation. |
+| `opt-in/` | Optional topics, disabled by default, each with its own `README.md`. |
 | `rules/` | Rules that Claude follows in every project, such as for workflow, Git and security. |
 | `skills/` | Skills and slash commands that the user or Claude can start. |
 | `tests/` | A quality assurance script for a live session and automated tests for the configuration. |
@@ -63,6 +64,7 @@ tests/run.sh
 ## Documentation
 
 - [Agents](docs/agents.md): the subagents, with their purpose and frontmatter keys.
+- [Opt-in](docs/opt-in.md): the layout of the optional topics.
 - [Settings](docs/settings.md): every key with its value and effect.
 - [Status line](docs/statusline.md): the fields, glyphs and colours of the status line.
 

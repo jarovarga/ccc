@@ -23,7 +23,7 @@ else
 fi
 
 shopt -s nullglob
-test_files=("${TESTS_DIR}"/*.test.sh)
+test_files=("${TESTS_DIR}"/*.test.sh "${TESTS_DIR}"/opt-in/*.test.sh)
 shopt -u nullglob
 
 if [[ "${#test_files[@]}" -eq 0 ]]; then

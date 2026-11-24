@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/github.sh",
+            "onFailure": "block",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(gh auth status*)",
+      "Bash(gh gist view *)",
+      "Bash(gh issue list*)",
+      "Bash(gh issue view *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr list*)",
+      "Bash(gh pr view *)",
+      "Bash(gh repo view*)",
+      "Bash(gh run list*)",
+      "Bash(gh run view *)",
+      "Bash(gh search *)"
+    ],
+    "ask": [
+      "Bash(gh * close*)",
+      "Bash(gh * comment*)",
+      "Bash(gh * create*)",
+      "Bash(gh * delete*)",
+      "Bash(gh * edit*)",
+      "Bash(gh * merge*)",
+      "Bash(gh * reopen*)",
+      "Bash(gh * review*)",
+      "Bash(gh api *)",
+      "Bash(gh release *)",
+      "Bash(gh secret *)",
+      "Bash(gh variable *)",
+      "Bash(gh workflow run*)"
+    ],
+    "deny": [
+      "Bash(gh auth status *--show-token*)",
+      "Bash(gh auth status *-t*)",
+      "Bash(gh auth token*)",
+      "Bash(gh repo delete*)",
+
+      "Edit(~/.config/gh/**)",
+      "Read(~/.config/gh/**)"
+    ]
+  },
+  "sandbox": {
+    "credentials": {
+      "files": [{ "mode": "deny", "path": "~/.config/gh" }]
+    },
+    "excludedCommands": ["gh *"]
+  }
+}
