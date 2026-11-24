@@ -19,7 +19,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 ## Features
 
 - A strict sandbox with a closed network and blocked credential files.
-- Permission rules that deny credential reads and destructive commands, and ask before deletions and config edits.
+- Permission rules that deny credential reads and destructive commands, and ask before deletions.
 - No attribution in commits and pull requests.
 - Rules for agent workflow, Git, security and writing instructions.
 - A status line with the model, the effort, the context and rate limit usage, and the session cost.

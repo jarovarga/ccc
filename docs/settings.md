@@ -21,8 +21,8 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | Key | Value | Effect |
 | --- | --- | --- |
 | `allow` | array | Actions that run without a prompt. |
-| `ask` | array | Actions that prompt first, such as deletions and configuration edits. |
-| `deny` | array | Actions that are refused, such as reading credentials and rewriting Git history. |
+| `ask` | array | Actions that prompt first, such as deletions. |
+| `deny` | array | Actions that are refused, such as credential reads, pushes and irreversible Git operations. |
 | `blockReadsOutsideWorkingDirectories` | `true` | No reads outside the working directories. |
 | `blockWritesOutsideWorkingDirectories` | `true` | No edits outside the working directories. |
 | `disableBypassPermissionsMode` | `"disable"` | `--dangerously-skip-permissions` has no effect. |
@@ -44,5 +44,5 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `excludedCommands` | `[]` | No command runs outside the sandbox. |
 | `failIfUnavailable` | `true` | Claude Code exits when the sandbox cannot start. |
 | `filesystem.allowRead` | array | Sandboxed commands can read the user settings. |
-| `filesystem.denyWrite` | array | Sandboxed commands cannot change Git configuration or hooks. |
+| `filesystem.denyWrite` | array | Sandboxed commands cannot change Git configuration or hooks under `~`. |
 | `network.allowedDomains` | `[]` | Sandboxed commands have no network access. |

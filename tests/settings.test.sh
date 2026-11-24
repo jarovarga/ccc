@@ -85,20 +85,18 @@ assert_jq "${CORE}" '.respectGitignore == true'
 begin 'deny rules'
 assert_jq "${CORE}" '[.permissions.deny[] | select(startswith("Bash("))]
   | sort == ([
-  "Bash(env)", "Bash(printenv*)", "Bash(gh auth token*)",
-  "Bash(gh auth status *-t*)", "Bash(gh auth status *--show-token*)",
-  "Bash(git push*)", "Bash(git -C * push*)",
-  "Bash(git reset --hard*)", "Bash(git -C * reset --hard*)",
-  "Bash(git clean*)", "Bash(git -C * clean*)",
-  "Bash(rm -r*)", "Bash(rm -R*)", "Bash(rm -fr*)", "Bash(rm -fR*)",
-  "Bash(rm --recursive*)", "Bash(sudo *)"
-] | sort)'
+  "Bash(env)", "Bash(printenv*)", "Bash(sudo *)"
+] + ([
+  "clean*", "filter-repo*", "gc --prune*", "push*", "reflog expire*",
+  "reset --hard*", "stash clear*"
+] | map("Bash(git " + . + ")", "Bash(git -C * " + . + ")")) | sort)'
 
 begin 'credential files denied'
 assert_jq "${CORE}" '[.permissions.deny[]
   | select(startswith("Bash(") or contains("/.git/") | not)]
   | sort == ([
-  "**/*.crt", "**/*.env", "**/*.key", "**/*.p12", "**/*.pem", "**/*.pfx",
+  "**/*.env", "**/*.jks", "**/*.kdbx", "**/*.key", "**/*.keystore",
+  "**/*.p12", "**/*.pem", "**/*.pfx", "**/*.ppk",
   "**/.env", "**/.env.*", "**/.envrc", "**/.git-credentials", "**/.netrc",
   "**/.ssh/**", "**/id_ecdsa*", "**/id_ed25519*", "**/id_rsa*",
   "~/.bash_history", "~/.git-credentials", "~/.gnupg/**", "~/.netrc",
@@ -108,9 +106,7 @@ assert_jq "${CORE}" '[.permissions.deny[]
 begin 'ask rules'
 assert_jq "${CORE}" '.permissions.ask | sort == ([
   "Bash(rm *)", "Bash(find *-delete*)", "Bash(rsync *--delete*)",
-  "Bash(shred *)", "Bash(truncate *)",
-  "Edit(./.claude/**)", "Edit(~/.claude/**)", "Edit(./.mcp.json)",
-  "Edit(~/.claude.json)", "Edit(./.gitignore)"
+  "Bash(shred *)", "Bash(truncate *)"
 ] | sort)'
 
 finish

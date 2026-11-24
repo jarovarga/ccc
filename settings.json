@@ -19,50 +19,48 @@
     ],
     "ask": [
       "Bash(find *-delete*)",
-
       "Bash(rm *)",
       "Bash(rsync *--delete*)",
-      "Bash(shred *)",
-      "Bash(truncate *)",
 
-      "Edit(./.claude/**)",
-      "Edit(./.gitignore)",
-      "Edit(./.mcp.json)",
-      "Edit(~/.claude.json)",
-      "Edit(~/.claude/**)"
+      "Bash(shred *)",
+      "Bash(truncate *)"
     ],
     "deny": [
       "Bash(env)",
 
-      "Bash(gh auth status *--show-token*)",
-      "Bash(gh auth status *-t*)",
-      "Bash(gh auth token*)",
-
       "Bash(git -C * clean*)",
+      "Bash(git -C * filter-repo*)",
+      "Bash(git -C * gc --prune*)",
       "Bash(git -C * push*)",
+      "Bash(git -C * reflog expire*)",
       "Bash(git -C * reset --hard*)",
+      "Bash(git -C * stash clear*)",
       "Bash(git clean*)",
+      "Bash(git filter-repo*)",
+      "Bash(git gc --prune*)",
       "Bash(git push*)",
+      "Bash(git reflog expire*)",
       "Bash(git reset --hard*)",
+      "Bash(git stash clear*)",
 
       "Bash(printenv*)",
 
-      "Bash(rm --recursive*)",
-      "Bash(rm -R*)",
-      "Bash(rm -fR*)",
-      "Bash(rm -fr*)",
-      "Bash(rm -r*)",
-
       "Bash(sudo *)",
-
-      "Edit(**/*.crt)",
-      "Read(**/*.crt)",
 
       "Edit(**/*.env)",
       "Read(**/*.env)",
 
+      "Edit(**/*.jks)",
+      "Read(**/*.jks)",
+
+      "Edit(**/*.kdbx)",
+      "Read(**/*.kdbx)",
+
       "Edit(**/*.key)",
       "Read(**/*.key)",
+
+      "Edit(**/*.keystore)",
+      "Read(**/*.keystore)",
 
       "Edit(**/*.p12)",
       "Read(**/*.p12)",
@@ -72,6 +70,9 @@
 
       "Edit(**/*.pfx)",
       "Read(**/*.pfx)",
+
+      "Edit(**/*.ppk)",
+      "Read(**/*.ppk)",
 
       "Edit(**/.env)",
       "Read(**/.env)",
