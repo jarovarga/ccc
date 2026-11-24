@@ -106,7 +106,8 @@ assert_jq "${CORE}" '[.permissions.deny[]
 begin 'ask rules'
 assert_jq "${CORE}" '.permissions.ask | sort == ([
   "Bash(rm *)", "Bash(find *-delete*)", "Bash(rsync *--delete*)",
-  "Bash(shred *)", "Bash(truncate *)"
+  "Bash(shred *)", "Bash(truncate *)",
+  "Edit(**/.gitignore)", "Edit(**/.mcp.json)"
 ] | sort)'
 
 finish

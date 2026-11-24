@@ -23,7 +23,10 @@
       "Bash(rsync *--delete*)",
 
       "Bash(shred *)",
-      "Bash(truncate *)"
+      "Bash(truncate *)",
+
+      "Edit(**/.gitignore)",
+      "Edit(**/.mcp.json)"
     ],
     "deny": [
       "Bash(env)",
