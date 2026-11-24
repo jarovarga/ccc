@@ -51,7 +51,7 @@ Quality assurance in Claude Code with this configuration instead of `~/.claude`:
 tests/qa.sh
 ```
 
-Automated tests:
+Automated tests (each named after what it checks):
 
 ```bash
 tests/run.sh
@@ -59,13 +59,6 @@ tests/run.sh
 
 > [!note]
 > Check `debug.log` for the output of failed tests.
-
-| Test | Checks |
-| --- | --- |
-| `limit.test.sh` | The always-loaded instructions stay within the size limit. |
-| `register.test.sh` | Only registered commands run outside the sandbox or skip the prompt. |
-| `settings.test.sh` | The security settings keep their values. |
-| `statusline.test.sh` | The status line shows its fields, glyphs and colours. |
 
 ## Documentation
 
