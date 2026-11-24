@@ -50,9 +50,6 @@
       "Edit(**/*.env)",
       "Read(**/*.env)",
 
-      "Edit(**/*.jks)",
-      "Read(**/*.jks)",
-
       "Edit(**/*.kdbx)",
       "Read(**/*.kdbx)",
 

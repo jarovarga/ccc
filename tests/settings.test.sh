@@ -95,7 +95,7 @@ begin 'credential files denied'
 assert_jq "${CORE}" '[.permissions.deny[]
   | select(startswith("Bash(") or contains("/.git/") | not)]
   | sort == ([
-  "**/*.env", "**/*.jks", "**/*.kdbx", "**/*.key", "**/*.keystore",
+  "**/*.env", "**/*.kdbx", "**/*.key", "**/*.keystore",
   "**/*.p12", "**/*.pem", "**/*.pfx", "**/*.ppk",
   "**/.env", "**/.env.*", "**/.envrc", "**/.git-credentials", "**/.netrc",
   "**/.ssh/**", "**/id_ecdsa*", "**/id_ed25519*", "**/id_rsa*",
