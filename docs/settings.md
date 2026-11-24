@@ -39,7 +39,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | --- | --- | --- |
 | `allowUnsandboxedCommands` | `false` | A command that fails in the sandbox is not retried outside it. |
 | `autoAllowBashIfSandboxed` | `true` | Sandboxed commands run without a prompt; `ask` and `deny` still apply. |
-| `credentials.files` | array | Sandboxed commands cannot read Git, GnuPG, `netrc` and SSH credentials. |
+| `credentials.files` | array | Sandboxed commands cannot read credentials or the shell history. |
 | `enabled` | `true` | Bash commands run in the sandbox. |
 | `excludedCommands` | `[]` | No command runs outside the sandbox. |
 | `failIfUnavailable` | `true` | Claude Code exits when the sandbox cannot start. |

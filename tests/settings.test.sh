@@ -41,10 +41,13 @@ assert_jq "${CORE}" '[.permissions.deny[] | select(contains("/.git/"))]
 
 begin 'system credentials only'
 assert_jq "${CORE}" '.sandbox.credentials.files | sort_by(.path) == [
+  {"mode": "deny", "path": "~/.bash_history"},
   {"mode": "deny", "path": "~/.git-credentials"},
   {"mode": "deny", "path": "~/.gnupg"},
   {"mode": "deny", "path": "~/.netrc"},
-  {"mode": "deny", "path": "~/.ssh"}
+  {"mode": "deny", "path": "~/.ssh"},
+  {"mode": "deny", "path": "~/.zsh_history"},
+  {"mode": "deny", "path": "~/.zsh_sessions"}
 ]'
 
 begin 'own settings readable'
@@ -98,7 +101,8 @@ assert_jq "${CORE}" '[.permissions.deny[]
   "**/*.crt", "**/*.env", "**/*.key", "**/*.p12", "**/*.pem", "**/*.pfx",
   "**/.env", "**/.env.*", "**/.envrc", "**/.git-credentials", "**/.netrc",
   "**/.ssh/**", "**/id_ecdsa*", "**/id_ed25519*", "**/id_rsa*",
-  "~/.git-credentials", "~/.gnupg/**", "~/.netrc", "~/.ssh/**"
+  "~/.bash_history", "~/.git-credentials", "~/.gnupg/**", "~/.netrc",
+  "~/.ssh/**", "~/.zsh_history", "~/.zsh_sessions/**"
 ] | map("Read(" + . + ")", "Edit(" + . + ")") | sort)'
 
 begin 'ask rules'

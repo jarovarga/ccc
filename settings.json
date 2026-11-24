@@ -103,6 +103,9 @@
       "Edit(~/**/.git/config)",
       "Edit(~/**/.git/hooks/**)",
 
+      "Edit(~/.bash_history)",
+      "Read(~/.bash_history)",
+
       "Edit(~/.git-credentials)",
       "Read(~/.git-credentials)",
 
@@ -113,7 +116,13 @@
       "Read(~/.netrc)",
 
       "Edit(~/.ssh/**)",
-      "Read(~/.ssh/**)"
+      "Read(~/.ssh/**)",
+
+      "Edit(~/.zsh_history)",
+      "Read(~/.zsh_history)",
+
+      "Edit(~/.zsh_sessions/**)",
+      "Read(~/.zsh_sessions/**)"
     ],
     "blockReadsOutsideWorkingDirectories": true,
     "blockWritesOutsideWorkingDirectories": true,
@@ -126,10 +135,13 @@
     "autoAllowBashIfSandboxed": true,
     "credentials": {
       "files": [
+        { "mode": "deny", "path": "~/.bash_history" },
         { "mode": "deny", "path": "~/.git-credentials" },
         { "mode": "deny", "path": "~/.gnupg" },
         { "mode": "deny", "path": "~/.netrc" },
-        { "mode": "deny", "path": "~/.ssh" }
+        { "mode": "deny", "path": "~/.ssh" },
+        { "mode": "deny", "path": "~/.zsh_history" },
+        { "mode": "deny", "path": "~/.zsh_sessions" }
       ]
     },
     "enabled": true,
