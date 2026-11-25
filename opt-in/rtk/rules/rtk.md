@@ -2,8 +2,10 @@
 
 ## Command output
 
-Bash commands are transparently rewritten through `rtk` (Rust Token Killer), which strips boilerplate from the output. It does not change command behaviour or exit codes, and keeps errors, failures and what is needed to act.
-
+- Bash commands are transparently rewritten through `rtk` (Rust Token Killer), which:
+  - strips boilerplate from the output;
+  - does not change command behaviour or exit codes;
+  - keeps errors, failures and what is needed to act.
 - Treat the output as complete; do not re-run for more detail.
 - When a truncated result carries a recovery hint and the elided part is needed, read it with `rtk recall <hash>`.
 
