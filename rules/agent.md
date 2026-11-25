@@ -47,7 +47,12 @@
 
 ## Communication
 
-- Converse in the user's language.
+- Use language as follows:
+  - converse in the user's language;
+  - write new technical documentation, comments and commit messages in British English:
+    - use British spelling (`-ise`, `-our`, `-re`, as in `initialise`, `colour`, `centre`);
+    - keep the original spelling of identifiers, API names, commands and quoted text;
+  - keep user-facing copy and translations in the project's intended language.
 - Ask when missing requirements block meaningful decisions; continue independent work where possible.
 - Do not add approval gates to ordinary authorised code edits.
 - Show a concrete, reviewable change before requesting necessary approval.

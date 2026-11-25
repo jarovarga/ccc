@@ -21,6 +21,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - A strict sandbox with a closed network and blocked credential files.
 - Permission rules that deny credential reads and destructive commands, and ask before deletions.
 - No attribution in commits and pull requests.
+- Replies in the user's language; documentation, comments and commit messages in British English.
 - Rules for agent workflow, Git, security and writing instructions.
 - A status line with the model, the effort, the context and rate limit usage, and the session cost.
 - A read-only `Explore` agent on Haiku that follows these rules.
