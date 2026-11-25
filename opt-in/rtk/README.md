@@ -7,9 +7,11 @@ Shortens the output of Bash commands with [RTK](https://rtk-ai.app) (Rust Token 
 
 ## Effect
 
-- Every Bash call is rewritten through `rtk`, which strips boilerplate from the output and keeps errors and exit codes.
-- Claude treats the filtered output as complete and reaches for `rtk recall` or `rtk bypass` only when it needs more.
-- Permission rules match the command as Claude wrote it, before the rewrite to `rtk <command>`, so they need no `rtk` variants.
+- Every Bash call is rewritten through `rtk`, which:
+  - strips boilerplate from the output;
+  - keeps errors and exit codes.
+- Claude treats the filtered output as complete and uses `rtk recall` or `rtk bypass` only when it needs more.
+- Existing permission rules keep working; they need no `rtk` prefix.
 
 > [!note]
 > The hook has no `onFailure: "block"`, because that would stop every Bash call whenever RTK is missing. Without RTK, the hook fails with a non-blocking error on every call and commands run unfiltered.

@@ -9,25 +9,45 @@ disable-model-invocation: true
 
 Arguments: $ARGUMENTS
 
-When the first argument is `save`, follow "Save", with any further arguments as the focus. When it is `resume`, follow "Resume". Otherwise ask with AskUserQuestion whether to save or resume.
+Act on the first argument:
+
+- `save`: follow "Save", with any further arguments as the focus.
+- `resume`: follow "Resume".
+- anything else: ask with AskUserQuestion whether to save or resume.
 
 ## Save
 
-Write the state of the current work to `.sandbox/context.md` in the working directory, so that a new session can continue without this conversation. When the arguments name a focus, put it first and leave out unrelated threads.
+Write the state of the current work to `.sandbox/context.md` in the working directory. A new session must be able to continue from it without this conversation.
 
-1. Run `git status --short --branch` and `git rev-parse --short HEAD` once each. Outside a Git repository, skip the Git parts below.
+When the arguments name a focus, put it first and leave out unrelated threads.
+
+Outside a Git repository, skip steps 1 and 5 and the `State` section.
+
+1. Run `git status --short --branch` and `git rev-parse --short HEAD` once each.
 2. If `.sandbox/context.md` exists, read it and ask with AskUserQuestion whether to replace it, extend it or stop.
 3. Write `.sandbox/context.md` with the Write tool, in British English, with these sections:
    - `Next step`: the one concrete action to take first.
-   - One section per point listed under "Compact instructions" in CLAUDE.md, which is the single source for what a summary keeps.
-   - `State`: the branch, the commit and the uncommitted files from step 1, with the files changed in this session marked.
-4. Mark every claim as verified, with the command and its result, or as unverified. Refer to code as `path:line` instead of copying it, and to commits, plans, issues and pull requests by hash, path or URL instead of repeating their content. Keep the file under about 60 lines. Leave out secrets and personal data.
-5. Run `git status --short .sandbox/context.md`. If it lists the file, it is not ignored: tell the user to add `.sandbox/` to their global Git ignore file, and do not edit that file yourself.
+   - One section per point under "Compact instructions" in CLAUDE.md, the single source for what a summary keeps.
+   - `State`, from step 1:
+     - the branch and the commit;
+     - the uncommitted files, with those changed in this session marked.
+4. For the content of the file:
+   - mark every claim as verified, with the command and its result, or as unverified;
+   - refer to code as `path:line` instead of copying it;
+   - refer to commits, plans, issues and pull requests by hash, path or URL instead of repeating their content;
+   - keep the file under about 60 lines;
+   - leave out secrets and personal data.
+5. Run `git status --short .sandbox/context.md`. If it lists the file, it is not ignored:
+   - tell the user to add `.sandbox/` to their global Git ignore file;
+   - do not edit that file yourself.
 6. Tell the user to run `/clear` and then `/session resume`. Write nothing else and do not commit.
 
 ## Resume
 
 1. Read `.sandbox/context.md`. If it does not exist, say so and stop.
-2. Run `git status --short --branch` and `git rev-parse --short HEAD` once each, and compare their output with `State`. Outside a Git repository, skip this step.
+2. Outside a Git repository, skip this step. Otherwise:
+   - run `git status --short --branch` and `git rev-parse --short HEAD` once each;
+   - compare their output with `State`.
 3. Report the differences, or that there are none, and the `Next step`.
-4. If there are differences, ask with AskUserQuestion whether to continue with the `Next step`, or stop. Otherwise continue with the `Next step`.
+4. If there are differences, ask with AskUserQuestion whether to continue with the `Next step` or stop.
+5. If there are none, continue with the `Next step`.

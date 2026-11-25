@@ -16,7 +16,9 @@
 
 - Check the tree for pre-existing changes before edits.
 - Preserve unrelated work; ask when overlapping changes obscure ownership or the intended result.
-- Keep scratch files, probe output and temporary copies in `./.sandbox/` instead of `$TMPDIR`; write them with the Write tool, which creates the directory.
+- Keep scratch files, probe output and temporary copies:
+  - in `./.sandbox/` instead of `$TMPDIR`;
+  - written with the Write tool, which creates the directory.
 
 ### Debugging
 
@@ -39,11 +41,15 @@
 
 ## Evidence
 
-- Ground conclusions in evidence: retrieve relevant files or primary sources with existing tools and read the needed sections.
+- Ground conclusions in evidence:
+  - retrieve relevant files or primary sources with existing tools;
+  - read the needed sections.
 - Prefer official technical documentation, and consult that of the target version before relying on memory.
 - Cite only URLs opened and checked; never invent URLs or titles.
 - Disclose inaccessible or partial sources.
-- Never invent data, content or identifiers such as prices, dates, reviews, version numbers or integrity hashes; take them from the source or leave a marked placeholder.
+- Never invent data, content or identifiers such as prices, dates, reviews, version numbers or integrity hashes:
+  - take them from the source,
+  - or leave a marked placeholder.
 
 ## Communication
 

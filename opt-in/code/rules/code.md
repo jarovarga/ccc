@@ -9,8 +9,11 @@ Where the project's framework or coding standard prescribes its own equivalent o
 ## Formatting and validation
 
 - Follow the project's `.editorconfig` and formatter settings.
-- Target the language or platform version the project declares; use a newer feature only when the target supports it.
-- Run relevant existing formatter, validator, linter, test and build commands from project configuration, using the command runner named in the project instructions.
+- Target the language or platform version the project declares.
+- Use a newer feature only when the target supports it.
+- Run relevant existing formatter, validator, linter, test and build commands:
+  - take them from project configuration;
+  - use the command runner named in the project instructions.
 - Never duplicate command definitions in agent instructions or invent scripts.
 - Treat project formatter, linter and static-analysis configurations as authoritative.
 - At the start of work on a language, check whether the project configures its linter or validator.
@@ -20,17 +23,27 @@ Where the project's framework or coding standard prescribes its own equivalent o
 
 - Apply YAGNI: use the smallest sufficient solution and do not add handling for scenarios that cannot occur.
 - Reuse existing components, tokens, helpers, tools, dependencies, frameworks, build systems and conventions.
-- Add files, abstractions, dependencies or workflows only as the task needs them; avoid speculative features and unrelated refactoring.
+- Add files, abstractions, dependencies or workflows only as the task needs them.
+- Avoid speculative features and unrelated refactoring.
 - Normalise only touched code.
-- Remove imports, variables and functions that the change orphaned; mention other dead code in the report instead of deleting it.
+- Handle dead code as follows:
+  - remove imports, variables and functions that the change orphaned;
+  - mention other dead code in the report instead of deleting it.
 - Never leave debugging calls or output in committed code.
 - Preserve public APIs, module boundaries and event semantics unless the task requires changes.
-- Before renaming or removing a route, method, API, CSS class, ID, data attribute, custom property or configuration key, check applicable code, templates, styles, scripts, tests and analytics dependencies.
+- Before renaming or removing any of these, check applicable code, templates, styles, scripts, tests and analytics dependencies:
+  - a route, method or API;
+  - a CSS class, ID, data attribute or custom property;
+  - a configuration key.
 - Respect deliberate removals: restore removed code, behaviour or documentation only when requested by the task.
 
 ## Design
 
-- Apply SOLID where it reduces real coupling or duplication: one responsibility per unit, narrow interfaces, injected dependencies and extension without modifying stable code.
+- Apply SOLID where it reduces real coupling or duplication:
+  - one responsibility per unit;
+  - narrow interfaces;
+  - injected dependencies;
+  - extension without modifying stable code.
 - Do not add an interface or layer without a concrete need.
 - Expose the smallest useful public API.
 - Never pass a dependency container into a unit as a service locator.
@@ -70,7 +83,9 @@ Where the project's framework or coding standard prescribes its own equivalent o
 
 - Validate input at the boundary.
 - Escape output for its context by default; output unescaped markup only when deliberately required.
-- Build SQL, URLs, shell commands and markup with parameter binding or structured APIs, never by concatenating input.
+- Build SQL, URLs, shell commands and markup:
+  - with parameter binding or structured APIs;
+  - never by concatenating input.
 - Allow-list values that cannot be bound, such as table and column names, sort directions and shell commands.
 - Never deserialise untrusted data with a native object serialiser; use JSON.
 - Never let input supply a whole file path; accept only known-good names or indexes.
@@ -82,8 +97,9 @@ Where the project's framework or coding standard prescribes its own equivalent o
 
 ## Testing
 
-- Add focused regression coverage for meaningful behaviour changes if the project has tests, following existing test conventions.
-- Cover changes to authentication, authorisation, input handling, secrets or personal data with a test if the project has tests.
+- If the project has tests:
+  - add focused regression coverage for meaningful behaviour changes, following existing test conventions;
+  - cover changes to authentication, authorisation, input handling, secrets or personal data with a test.
 - Avoid implementation-mirroring tests and tests for reversible formatting-only changes.
 - In tests, never call live external services, and restore changed global state.
 - Prefer real collaborators or handwritten fakes over mocks.
