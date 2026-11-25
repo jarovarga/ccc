@@ -149,7 +149,6 @@
     "excludedCommands": [],
     "failIfUnavailable": true,
     "filesystem": {
-      "allowRead": ["~/.claude/settings.json"],
       "denyWrite": ["~/**/.git/config", "~/**/.git/hooks"]
     },
     "network": {

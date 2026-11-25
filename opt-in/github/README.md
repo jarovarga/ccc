@@ -25,7 +25,7 @@ Lets Claude work with GitHub through the `gh` CLI.
 ## Requirements
 
 - Install the [GitHub CLI](https://cli.github.com) and log in with `gh auth login` outside Claude Code.
-- With [RTK](https://rtk-ai.app), set `exclude_commands = ["gh"]` under `[hooks]` in its `config.toml`.
+- With [RTK](https://rtk-ai.app) or the [`rtk`](../rtk/README.md) topic, set `exclude_commands = ["gh"]` under `[hooks]` in its `config.toml`.
 
 > [!note]
 > Without the RTK setting, `gh` stays in the sandbox and fails.

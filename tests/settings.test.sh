@@ -24,7 +24,7 @@ assert_jq "${CORE}" '.sandbox | keys == [
   "enabled", "excludedCommands", "failIfUnavailable", "filesystem", "network"
 ]'
 assert_jq "${CORE}" '.sandbox.credentials | keys == ["files"]'
-assert_jq "${CORE}" '.sandbox.filesystem | keys == ["allowRead", "denyWrite"]'
+assert_jq "${CORE}" '.sandbox.filesystem | keys == ["denyWrite"]'
 assert_jq "${CORE}" '.sandbox.network | keys == ["allowedDomains"]'
 
 begin 'strict sandbox'
@@ -49,10 +49,6 @@ assert_jq "${CORE}" '.sandbox.credentials.files | sort_by(.path) == [
   {"mode": "deny", "path": "~/.zsh_history"},
   {"mode": "deny", "path": "~/.zsh_sessions"}
 ]'
-
-begin 'own settings readable'
-assert_jq "${CORE}" \
-  '.sandbox.filesystem.allowRead == ["~/.claude/settings.json"]'
 
 begin 'environment scrub only'
 assert_jq "${CORE}" '.env == {"CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"}'
