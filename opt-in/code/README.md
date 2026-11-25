@@ -4,6 +4,7 @@ Rules for writing and changing code in any language.
 
 ## Effect
 
+- Claude reads the relevant documentation, configuration and code before editing.
 - Claude follows the project's formatter, linter and target version, and runs the project's own checks.
 - Changes stay minimal and reuse what the project already has.
 - Code follows rules for design, comments, robustness, input and output, accessibility and testing.

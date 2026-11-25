@@ -2,6 +2,10 @@
 
 Where the project's framework or coding standard prescribes its own equivalent of a rule here, follow it.
 
+## Working conventions
+
+- Before code edits, read the relevant `README.md`, documentation, configuration and implementation.
+
 ## Formatting and validation
 
 - Follow the project's `.editorconfig` and formatter settings.
