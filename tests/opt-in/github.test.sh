@@ -6,8 +6,16 @@ set -o pipefail
 # shellcheck source=../lib/check.sh
 source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/check.sh" || exit 1
 
-readonly HOOK="${CCC_ROOT}/opt-in/github/hooks/github.sh"
 readonly BLOCK=2 ALLOW=0
+
+# macOS mktemp ignores TMPDIR without a template, and the sandbox allows
+# writes only there.
+WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/github.test.XXXXXX") || exit 1
+readonly WORK_DIR
+trap 'rm -rf -- "${WORK_DIR}"' EXIT
+HOOK=$(install_hook "${CCC_ROOT}/opt-in/github/hooks/github.sh" \
+  "${WORK_DIR}") || exit 1
+readonly HOOK
 
 # Fails unless the hook exits with the expected code for the command.
 # Arguments: expected exit code, command.
@@ -82,5 +90,12 @@ assert_hook "${BLOCK}" 'gh repo view localhost/o/r'
 
 begin 'IFS expansion blocked'
 assert_hook "${BLOCK}" "gh repo view\${IFS}example.invalid/o/r"
+
+begin 'missing library fails'
+rm -rf -- "${WORK_DIR}/hooks/lib" || exit 1
+status=0
+"${BASH}" -- "${HOOK}" <<<'{"tool_input": {"command": "ls"}}' \
+  >/dev/null 2>&1 || status=$?
+[[ "${status}" -eq 1 ]] || fail "exit ${status} without hooks/lib, expected 1"
 
 finish

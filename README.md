@@ -33,7 +33,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 | --- | --- |
 | `agents/` | Subagents that replace or extend the built-in ones. |
 | `docs/` | Documentation of the configuration. |
-| `hooks/` | Scripts that Claude Code runs itself, outside the conversation. |
+| `hooks/` | Scripts that Claude Code runs itself, outside the conversation, and in `hooks/lib/` the library that the Bash hooks share. |
 | `opt-in/` | Optional topics to add as needed, each with its own `README.md`. |
 | `rules/` | Rules that Claude follows in every project, such as for workflow, Git and security. |
 | `skills/` | Skills and slash commands that the user or Claude can start. |

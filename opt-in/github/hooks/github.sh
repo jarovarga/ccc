@@ -9,10 +9,8 @@
 # its configuration or reach the network. Outside the sandbox nothing limits
 # where gh sends a request, so only github.com is allowed.
 #
-# The command is first reduced to the part the shell executes: quoted text,
-# heredoc bodies and arithmetic are dropped, so a title that contains "|" is not
-# mistaken for a pipe, while $(...) and backticks start a command of their own,
-# because the shell runs them. It is then split into simple commands.
+# The command is split into simple commands by lib/shell.sh, which drops quoted
+# text, so a title that contains "|" is not mistaken for a pipe.
 #
 # Limits: bash -c, eval, scripts and aliases are not followed, and a host inside
 # a variable (gh repo view $REPO) is not seen. This is a safety net for mistakes,
@@ -20,132 +18,11 @@
 set -o nounset
 set -o pipefail
 
-# awk program that prints the executable structure of a shell command, one
-# simple command per line; a line holding only "|" joins the commands around it.
-read -r -d '' AWK_PROGRAM <<'AWK' || true
-function quoted(word) {
-  if (word == "" || word ~ /[ \t\n]/) return "\"\""
-  gsub(/[;&|()<>`]/, "_", word)
-  return word
-}
-# Returns the position after the arithmetic expression that starts at pos with "((".
-function skip_arithmetic(pos,   depth, ch) {
-  depth = 0
-  while (pos <= n) {
-    ch = substr(buf, pos, 1)
-    pos++
-    if (ch == "(") depth++
-    else if (ch == ")") { depth--; if (depth == 0) break }
-  }
-  return pos
-}
-{ buf = buf $0 "\n" }
-END {
-  n = length(buf)
-  i = 1
-  sp = 0
-  npend = 0
-  while (i <= n) {
-    c = substr(buf, i, 1)
-    top = (sp > 0) ? kind[sp] : "N"
-    if (top == "D") {
-      if (c == "\\") { dtext[sp] = dtext[sp] substr(buf, i + 1, 1); i += 2 }
-      else if (c == "\"") { w = hasc[sp] ? "" : dtext[sp]; sp--; out = out quoted(w); i++ }
-      else if (substr(buf, i, 3) == "$((") { hasc[sp] = 1; i = skip_arithmetic(i + 1) }
-      else if (c == "$" && substr(buf, i + 1, 1) == "(") {
-        hasc[sp] = 1; sp++; kind[sp] = "C"; depth[sp] = 0; out = out "\n"; i += 2
-      }
-      else if (c == "`") { hasc[sp] = 1; sp++; kind[sp] = "B"; out = out "\n"; i++ }
-      else { dtext[sp] = dtext[sp] c; i++ }
-      continue
-    }
-    if (c == "\\") {
-      nx = substr(buf, i + 1, 1)
-      if (nx == "\n") out = out " "
-      else if (nx ~ /[;&|()<>` \t]/) out = out "_"
-      else out = out nx
-      i += 2
-    } else if (c == "'") {
-      j = index(substr(buf, i + 1), "'")
-      if (j == 0) { w = substr(buf, i + 1); i = n + 1 } else { w = substr(buf, i + 1, j - 1); i += j + 1 }
-      out = out quoted(w)
-    } else if (c == "$" && substr(buf, i + 1, 1) == "'") {
-      i += 2; w = ""
-      while (i <= n) {
-        ch = substr(buf, i, 1)
-        if (ch == "\\") { w = w substr(buf, i + 1, 1); i += 2 }
-        else if (ch == "'") { i++; break }
-        else { w = w ch; i++ }
-      }
-      out = out quoted(w)
-    } else if (c == "\"") {
-      sp++; kind[sp] = "D"; dtext[sp] = ""; hasc[sp] = 0; i++
-    } else if (substr(buf, i, 3) == "$((") {
-      i = skip_arithmetic(i + 1); out = out " 0 "
-    } else if (substr(buf, i, 2) == "((" && (i == 1 || substr(buf, i - 1, 1) ~ /[ \t\n;&|(]/)) {
-      i = skip_arithmetic(i); out = out " 0 "
-    } else if (c == "$" && substr(buf, i + 1, 1) == "(") {
-      sp++; kind[sp] = "C"; depth[sp] = 0; out = out "\n"; i += 2
-    } else if (c == "`") {
-      if (top == "B") { sp--; out = out "\n" } else { sp++; kind[sp] = "B"; out = out "\n" }
-      i++
-    } else if (c == "(") {
-      if (top == "C") depth[sp]++
-      out = out "\n"; i++
-    } else if (c == ")") {
-      if (top == "C") { if (depth[sp] > 0) depth[sp]--; else sp-- }
-      out = out "\n"; i++
-    } else if (substr(buf, i, 3) == "<<<") {
-      out = out " <<< "; i += 3
-    } else if (substr(buf, i, 2) == "<<") {
-      i += 2; strip = 0
-      if (substr(buf, i, 1) == "-") { strip = 1; i++ }
-      while (substr(buf, i, 1) ~ /[ \t]/) i++
-      q = substr(buf, i, 1); d = ""
-      if (q == "'" || q == "\"") {
-        j = index(substr(buf, i + 1), q)
-        if (j == 0) { d = substr(buf, i + 1); i = n + 1 } else { d = substr(buf, i + 1, j - 1); i += j + 1 }
-      } else {
-        if (q == "\\") i++
-        while (i <= n && substr(buf, i, 1) !~ /[ \t\n;&|()<>]/) { d = d substr(buf, i, 1); i++ }
-      }
-      npend++; pend[npend] = d; pstrip[npend] = strip; out = out " <<H "
-    } else if (c == "\n") {
-      i++
-      # The bodies of the heredocs opened on this line are data, not commands.
-      for (k = 1; k <= npend; k++) {
-        while (i <= n) {
-          e = index(substr(buf, i), "\n")
-          if (e == 0) { line = substr(buf, i); i = n + 1 } else { line = substr(buf, i, e - 1); i += e }
-          if (pstrip[k]) sub(/^\t+/, "", line)
-          if (line == pend[k]) break
-        }
-      }
-      npend = 0
-      out = out "\n"
-    } else if (c == "#" && (i == 1 || substr(buf, i - 1, 1) ~ /[ \t\n;&|(]/)) {
-      e = index(substr(buf, i), "\n")
-      if (e == 0) i = n + 1; else i += e - 1
-    } else if (c == "|") {
-      if (substr(buf, i + 1, 1) == "|") { out = out "\n"; i += 2 } else { out = out "\n|\n"; i++ }
-    } else if (c == ";" || c == "&") {
-      out = out "\n"; i++
-    } else if ((c == "<" || c == ">") && substr(buf, i + 1, 1) == "&" && substr(buf, i + 2, 1) ~ /[0-9-]/) {
-      # A file descriptor duplication such as 2>&1 is neither a second command
-      # nor a redirect to a file, so it is dropped.
-      out = out " "; i += 2
-    } else if (c == "<" || c == ">") {
-      out = out " " c " "; i++
-    } else {
-      out = out c; i++
-    }
-  }
-  printf "%s", out
-}
-AWK
-readonly AWK_PROGRAM
+# Without the library the hook exits with 1, which blocks the call through
+# onFailure "block" in settings.json.
+# shellcheck source=../../../hooks/lib/shell.sh
+source "${BASH_SOURCE[0]%/*}/lib/shell.sh" || exit 1
 
-readonly ASSIGNMENT_RE='^[A-Za-z_][A-Za-z0-9_]*='
 readonly GH_URL_RE='^[A-Za-z][A-Za-z0-9+.-]*://([^/]*)'
 # A host is a dotted name, an IPv4 address or localhost. A bare label before two
 # path segments (repos/owner/repo) is a path, so it is not taken for a host.
@@ -165,57 +42,6 @@ deny() {
   exit 2
 }
 
-# Succeeds for words that run another command, or open a block, rather than
-# being the command itself.
-is_wrapper() {
-  case $1 in
-    sudo | env | command | nohup | nice | exec | builtin | time | timeout) return 0 ;;
-    watch | setsid | xargs | rtk | '{' | '!') return 0 ;;
-    if | then | else | elif | do | while | until) return 0 ;;
-  esac
-  return 1
-}
-
-# Succeeds for the options of a wrapper that take a separate value, such as
-# sudo -u <user> or nice -n <count>.
-is_wrapper_value_option() {
-  case $1 in
-    -u | -g | -n | -C | -s | -d | -I | -L | -P | -S | -a | -k | -h | -R | -U) return 0 ;;
-    --user | --group | --signal | --kill-after | --adjustment | --chdir) return 0 ;;
-    --max-args | --max-procs | --delimiter | --arg-file | --replace) return 0 ;;
-  esac
-  return 1
-}
-
-# Succeeds for a word that only configures the wrapper in front of it: an option
-# or a number such as the duration of timeout. Anything else is the command.
-is_wrapper_argument() {
-  [[ $1 == -* || $1 =~ ^[0-9][0-9.]*[smhd]?$ ]]
-}
-
-# Prints the index of the command a simple command runs, after its leading
-# assignments and wrappers. Arguments: the words of the command.
-command_index() {
-  local count=$# index=0 after_wrapper=0
-  local -a words=("$@")
-
-  while ((index < count)); do
-    if [[ ${words[index]} =~ ${ASSIGNMENT_RE} ]]; then
-      :
-    elif is_wrapper "${words[index]}"; then
-      after_wrapper=1
-    elif ((after_wrapper)) && is_wrapper_argument "${words[index]}"; then
-      if is_wrapper_value_option "${words[index]}"; then
-        index=$((index + 1))
-      fi
-    else
-      break
-    fi
-    index=$((index + 1))
-  done
-  printf '%s' "${index}"
-}
-
 # Succeeds when one of the words is a redirect operator left by the awk program.
 has_redirect() {
   local word
@@ -225,12 +51,6 @@ has_redirect() {
     esac
   done
   return 1
-}
-
-# Succeeds for a word that expands $IFS, which the shell turns into a space after
-# the checks: gh${IFS}repo is one word here but two words when run.
-has_ifs_expansion() {
-  [[ $1 == *"\$IFS"* || $1 == *"\${IFS"* ]]
 }
 
 # Succeeds for github.com, the only host gh may reach. Argument: a host, with
@@ -332,7 +152,7 @@ if ! command=$(jq -r '.tool_input.command // empty' <<<"${input}"); then
 fi
 [[ ${command} == *gh* ]] || exit 0
 
-if ! code=$(awk "${AWK_PROGRAM}" <<<"${command}"); then
+if ! code=$(shell_segments "${command}"); then
   deny "could not parse the command."
 fi
 

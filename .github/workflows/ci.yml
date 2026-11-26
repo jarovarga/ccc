@@ -45,4 +45,4 @@ jobs:
         run: >-
           shellcheck -x --source-path=SCRIPTDIR
           tests/*.sh tests/lib/*.sh tests/opt-in/*.sh hooks/*.sh
-          opt-in/*/hooks/*.sh
+          hooks/lib/*.sh opt-in/*/hooks/*.sh

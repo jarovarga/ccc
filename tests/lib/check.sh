@@ -36,6 +36,17 @@ assert_jq() {
   fail "$1 does not match $2"
 }
 
+# Copies a hook and the shared hooks/lib into a directory, laid out as in
+# ~/.claude/hooks, so that the hook finds its library as it does when
+# installed. Prints the path of the copied hook.
+# Arguments: the hook, the directory.
+install_hook() {
+  mkdir -p -- "$2/hooks" || return 1
+  cp -p -- "$1" "$2/hooks/" || return 1
+  cp -pR -- "${CCC_ROOT}/hooks/lib" "$2/hooks/" || return 1
+  printf '%s\n' "$2/hooks/${1##*/}"
+}
+
 # Ends the test file: exit 0 when no check failed.
 finish() {
   if [[ "${failures}" -eq 0 ]]; then

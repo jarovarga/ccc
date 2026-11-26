@@ -25,6 +25,7 @@ Lets Claude work with GitHub through the `gh` CLI.
 ## Requirements
 
 - Install the [GitHub CLI](https://cli.github.com) and log in with `gh auth login` outside Claude Code.
+- Install the core `hooks/lib/shell.sh` as `~/.claude/hooks/lib/shell.sh`; without it the hook fails and, through `onFailure: "block"`, blocks every Bash call.
 - With [RTK](https://rtk-ai.app) or the [`rtk`](../rtk/README.md) topic, set `exclude_commands = ["gh"]` under `[hooks]` in its `config.toml`.
 
 > [!note]
