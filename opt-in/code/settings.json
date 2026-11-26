@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/code-paths.sh",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "~/.claude/hooks/code-suppressions.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}
