@@ -70,7 +70,7 @@ tests/run.sh
 | [docs/agents.md](docs/agents.md) | The subagents, with their purpose and frontmatter keys. |
 | [docs/opt-in.md](docs/opt-in.md) | The layout of the optional topics. |
 | [docs/settings.md](docs/settings.md) | Every key with its value and effect. |
-| [docs/ssh-agent.md](docs/ssh-agent.md) | A persistent SSH agent on macOS for signing commits in the sandbox. |
+| [docs/ssh.md](docs/ssh.md) | A persistent SSH agent on macOS and SSH commit signing that work in the sandbox. |
 | [docs/statusline.md](docs/statusline.md) | The fields, glyphs and colours of the status line. |
 
 ## Security
