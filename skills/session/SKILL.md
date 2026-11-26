@@ -1,11 +1,11 @@
 ---
 name: session
-description: Before /clear, saves the state of the work to .sandbox/context.md; in the new session, resumes from it. Start with /session save [focus] or /session resume.
+description: Saves the state of the work and resumes it in a new session.
 argument-hint: "save [focus] | resume"
 disable-model-invocation: true
 ---
 
-# session
+# Session
 
 Arguments: $ARGUMENTS
 
