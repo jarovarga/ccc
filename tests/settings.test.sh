@@ -11,9 +11,12 @@ readonly CORE="${CCC_ROOT}/settings.json"
 begin 'only core keys'
 assert_jq "${CORE}" 'keys == [
   "attribution", "disableClaudeAiConnectors", "disableSkillShellExecution",
-  "enableArtifact", "env", "permissions",
+  "enableArtifact", "env", "hooks", "permissions",
   "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine"
 ]'
+assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
+  "hooks": [{"command": "~/.claude/hooks/git.sh", "onFailure": "block",
+    "timeout": 10, "type": "command"}]}]}'
 assert_jq "${CORE}" '.permissions | keys == [
   "allow", "ask", "blockReadsOutsideWorkingDirectories",
   "blockWritesOutsideWorkingDirectories", "deny",

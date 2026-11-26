@@ -15,6 +15,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `disableSkillShellExecution` | `true` | Skills cannot run shell commands on load; bundled ones are unaffected. |
 | `enableArtifact` | `false` | No publishing of artifacts to claude.ai. |
 | `env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | `1` | No credentials in the environment of subprocesses. |
+| `hooks.PreToolUse` | `hooks/git.sh` for Bash | Blocks Git commands that skip the Git hooks (`--no-verify`, `commit -n`, `am -n`) or set configuration for one command (`git -c`, `--config-env`, `GIT_CONFIG_*`); with `onFailure: "block"`, a fault in the hook blocks the call too. |
 | `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |
 | `respectGitignore` | `true` | Files that Git ignores stay out of the `@` picker. |
 | `statusLine` | object | The status line described in [docs/statusline.md](statusline.md). |

@@ -10,6 +10,21 @@
   "env": {
     "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/git.sh",
+            "onFailure": "block",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Edit(./.sandbox/**)",
