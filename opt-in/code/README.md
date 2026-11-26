@@ -1,6 +1,6 @@
 # Code
 
-Rules for writing and changing code in any language, with hooks that protect files a package manager or Git manages and that enforce the rule of `security.md` against inline exceptions.
+Rules and hooks for writing and changing code in any language.
 
 ## Effect
 
@@ -14,7 +14,7 @@ Rules for writing and changing code in any language, with hooks that protect fil
   - change a lock file (`composer.lock`, `package-lock.json`), a file in `vendor/` at the project root or in `node_modules/` at any depth, or anything in `.git/`.
 
 > [!note]
-> The hooks are a safety net and fail open: a fault in them, such as a hook script without the execute permission, lets the edit through without a visible error. They do not see writes through Bash. A Write or NotebookEdit counts every suppression in its content, also one that the file already had, so in a file that holds suppressions as test data, such as `tests/opt-in/code.test.sh`, a Write or an Edit that adds one is blocked; the user makes that change.
+> The hooks are a safety net: they fail open, do not see writes through Bash, and count every suppression in a Write, also one the file already had.
 
 ## Contents
 
@@ -27,7 +27,8 @@ Rules for writing and changing code in any language, with hooks that protect fil
 
 ## Requirements
 
-- Install `jq`; without it the hooks fail with a non-blocking error and check nothing.
+- Install `jq`.
+- Keep the hook scripts executable; otherwise they check nothing, without a visible error.
 
 ## Tests
 
