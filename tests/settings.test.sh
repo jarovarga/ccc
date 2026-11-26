@@ -24,7 +24,7 @@ assert_jq "${CORE}" '.sandbox | keys == [
   "enabled", "excludedCommands", "failIfUnavailable", "filesystem", "network"
 ]'
 assert_jq "${CORE}" '.sandbox.credentials | keys == ["files"]'
-assert_jq "${CORE}" '.sandbox.filesystem | keys == ["denyWrite"]'
+assert_jq "${CORE}" '.sandbox.filesystem | keys == ["allowRead", "denyWrite"]'
 assert_jq "${CORE}" '.sandbox.network | keys == ["allowedDomains"]'
 
 begin 'strict sandbox'
@@ -38,6 +38,10 @@ assert_jq "${CORE}" '.sandbox.filesystem.denyWrite | sort
   == ["~/**/.git/config", "~/**/.git/hooks"]'
 assert_jq "${CORE}" '[.permissions.deny[] | select(contains("/.git/"))]
   | sort == ["Edit(~/**/.git/config)", "Edit(~/**/.git/hooks/**)"]'
+
+begin 'only git signers readable'
+assert_jq "${CORE}" '.sandbox.filesystem.allowRead
+  == ["~/.config/git/allowed_signers"]'
 
 begin 'system credentials only'
 assert_jq "${CORE}" '.sandbox.credentials.files | sort_by(.path) == [

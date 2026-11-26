@@ -149,6 +149,7 @@
     "excludedCommands": [],
     "failIfUnavailable": true,
     "filesystem": {
+      "allowRead": ["~/.config/git/allowed_signers"],
       "denyWrite": ["~/**/.git/config", "~/**/.git/hooks"]
     },
     "network": {

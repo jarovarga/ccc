@@ -46,5 +46,6 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `enabled` | `true` | Bash commands run in the sandbox. |
 | `excludedCommands` | `[]` | No command runs outside the sandbox. |
 | `failIfUnavailable` | `true` | Claude Code exits when the sandbox cannot start. |
+| `filesystem.allowRead` | array | Sandboxed commands can read `~/.config/git/allowed_signers`, so that Git can verify SSH signatures of commits. |
 | `filesystem.denyWrite` | array | Sandboxed commands cannot change Git configuration or hooks under `~`. |
 | `network.allowedDomains` | `[]` | Sandboxed commands have no network access. |
