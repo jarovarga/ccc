@@ -16,12 +16,12 @@ A topic mirrors the layout of `~/.claude`:
 | `opt-in/<topic>/settings.json` | Only the keys of the topic, merged into `~/.claude/settings.json`. |
 | `tests/opt-in/<topic>.test.sh` | Tests of the topic, run by `tests/run.sh`. |
 
-A topic has only the directories it needs.
+A topic has only the directories it needs. A topic is active only while its files are in `~/.claude`; to turn it off, remove them and its keys from `~/.claude/settings.json`.
 
 ## Usage
 
 Start Claude Code in the checkout and paste this prompt, with the chosen topics or `all` in place of `<topics>`:
 
 ```text
-Add the opt-in topics <topics> from opt-in/ to ~/.claude, following docs/opt-in.md. Copy each topic directory into the matching directory of ~/.claude and keep hook scripts executable. Merge the topic's settings.json into ~/.claude/settings.json: add missing array entries, skip duplicates and keep every other key. Do not copy README.md. Show the changes before writing, then list the requirements from each topic's README.md that I must meet myself.
+Add the opt-in topics <topics> from opt-in/ to ~/.claude, following docs/opt-in.md. Show the files to copy from each topic directory and the merge of the topic's settings.json into ~/.claude/settings.json: add missing array entries, skip duplicates and keep every other key. Do not copy README.md. Then give me the commands to run myself with ! to copy the files, apply the merge and keep hook scripts executable, and list the requirements from each topic's README.md that I must meet myself.
 ```

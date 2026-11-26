@@ -1,6 +1,6 @@
 # Code
 
-Where the project's framework or coding standard prescribes its own equivalent of a rule here, follow it.
+Where the project's framework or coding standard prescribes its own equivalent of a rule here, follow it. For input handling, output escaping and security tests, an equivalent must give at least the same protection.
 
 ## Working conventions
 
@@ -11,13 +11,42 @@ Where the project's framework or coding standard prescribes its own equivalent o
 - Follow the project's `.editorconfig` and formatter settings.
 - Target the language or platform version the project declares.
 - Use a newer feature only when the target supports it.
-- Run relevant existing formatter, validator, linter, test and build commands:
-  - take them from project configuration;
-  - use the command runner named in the project instructions.
-- Never duplicate command definitions in agent instructions or invent scripts.
+- Run the relevant formatter, validator, linter, test and build commands from project configuration, with the command runner named in the project instructions.
+- Never copy command definitions from project configuration into agent instructions; refer to the configuration instead.
+- Never invent a project script; run and document only the scripts that the project's configuration defines.
+- Add a new script only when the task requires one.
 - Treat project formatter, linter and static-analysis configurations as authoritative.
 - At the start of work on a language, check whether the project configures its linter or validator.
 - If the project configures none, flag it once in the report and continue; do not add one unasked.
+
+## Input and output
+
+- Validate input at the boundary.
+- Escape output for its context by default; output unescaped markup only where the task or the project requires raw markup, and say so in a comment.
+- Build SQL, URLs, shell commands and markup:
+  - with parameter binding or structured APIs;
+  - never by concatenating input.
+- Allow-list values that cannot be bound, such as table and column names, sort directions and shell commands.
+- Never deserialise untrusted data with a native object serialiser; use JSON.
+- Never let input supply a whole file path; accept only known-good names or indexes.
+- Normalise a path before using it in file operations and reject a result outside the allowed base directory.
+
+## Robustness
+
+- Store and process times in UTC and convert them only for display; never assume a day has 86,400 seconds.
+- Format dates and numbers through locale-aware APIs, never by manual string replacement.
+- Use Unicode-aware string functions for text that can contain non-ASCII characters.
+- Represent money as integer minor units or a decimal type, never as floating point.
+- Give every network call a timeout and handle its failure explicitly.
+- Retry only idempotent operations, with a bounded number of attempts and backoff.
+- Do not make network calls inside a database transaction.
+- Avoid N+1 queries; load related data in one query or a batch.
+- Catch exceptions only to handle or translate them.
+- Never swallow errors.
+- Check a return value that signals failure explicitly; never rely on truthiness.
+- Release resources on every path, including failure.
+- Wrap errors with their original cause and never let low-level or vendor errors cross a layer boundary.
+- Catch broadly only at the entry-point boundary, to log and return a generic error.
 
 ## Changes
 
@@ -25,7 +54,7 @@ Where the project's framework or coding standard prescribes its own equivalent o
 - Reuse existing components, tokens, helpers, tools, dependencies, frameworks, build systems and conventions.
 - Add files, abstractions, dependencies or workflows only as the task needs them.
 - Avoid speculative features and unrelated refactoring.
-- Normalise only touched code.
+- Normalise only the lines and blocks that the change edits.
 - Handle dead code as follows:
   - remove imports, variables and functions that the change orphaned;
   - mention other dead code in the report instead of deleting it.
@@ -62,44 +91,13 @@ Where the project's framework or coding standard prescribes its own equivalent o
 - Remove stale comments; avoid narrating obvious operations.
 - Document public APIs (parameters, return values, relevant exceptions), not internals.
 
-## Robustness
-
-- Store and process times in UTC and convert them only for display; never assume a day has 86,400 seconds.
-- Format dates and numbers through locale-aware APIs, never by manual string replacement.
-- Use Unicode-aware string functions for text that can contain non-ASCII characters.
-- Represent money as integer minor units or a decimal type, never as floating point.
-- Give every network call a timeout and handle its failure explicitly.
-- Retry only idempotent operations, with a bounded number of attempts and backoff.
-- Do not make network calls inside a database transaction.
-- Avoid N+1 queries; load related data in one query or a batch.
-- Catch exceptions only to handle or translate them.
-- Never swallow errors.
-- Check a return value that signals failure explicitly; never rely on truthiness.
-- Release resources on every path, including failure.
-- Wrap errors with their original cause and never let low-level or vendor errors cross a layer boundary.
-- Catch broadly only at the entry-point boundary, to log and return a generic error.
-
-## Input and output
-
-- Validate input at the boundary.
-- Escape output for its context by default; output unescaped markup only when deliberately required.
-- Build SQL, URLs, shell commands and markup:
-  - with parameter binding or structured APIs;
-  - never by concatenating input.
-- Allow-list values that cannot be bound, such as table and column names, sort directions and shell commands.
-- Never deserialise untrusted data with a native object serialiser; use JSON.
-- Never let input supply a whole file path; accept only known-good names or indexes.
-- Normalise a path before using it in file operations and reject a result outside the allowed base directory.
-
 ## Accessibility
 
 - Meet WCAG 2.2 AA in user-facing interfaces.
 
 ## Testing
 
-- If the project has tests:
-  - add focused regression coverage for meaningful behaviour changes, following existing test conventions;
-  - cover changes to authentication, authorisation, input handling, secrets or personal data with a test.
+- If the project has tests, add focused regression coverage for meaningful behaviour changes, following existing test conventions, and cover every change to authentication, authorisation, input handling, secrets or personal data with a test.
 - Avoid implementation-mirroring tests and tests for reversible formatting-only changes.
 - In tests, never call live external services, and restore changed global state.
 - Prefer real collaborators or handwritten fakes over mocks.

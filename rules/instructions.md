@@ -4,6 +4,8 @@ paths:
   - "**/AGENTS.md"
   - "**/CLAUDE.local.md"
   - "**/CLAUDE.md"
+  - "**/SKILL.md"
+  - "**/agents/*.md"
   - "**/rules/**/*.md"
 ---
 
@@ -14,16 +16,14 @@ When creating or revising instructions for AI agents:
 - Use these forms of language:
   - imperative language for instructions (`Use`, `Check`, `Prefer`, `Do not`);
   - neutral declarative language for facts, definitions and context.
-- Avoid first- and second-person phrasing (`I`, `my`, `you`, `your`):
-  - keep it only where identity, ownership or preference is semantically important;
-  - prefer direct instructions over `you should`, `I want`, `I prefer` or `make sure to`.
+- Avoid first- and second-person phrasing (`I`, `my`, `you`, `your`) unless identity, ownership or preference is semantically important; write direct instructions instead of `you should`, `I want`, `I prefer` or `make sure to`.
 - Keep procedures explicit, ordered and actionable.
 - Keep the result concise and natural rather than mechanically converting every sentence into an imperative.
-- Write instructions concrete enough to verify, such as the exact command to run.
+- Write instructions concrete enough to verify, such as the exact command to run; name a project command by how it is invoked (`npm test`), not by copying its definition.
 - Add no emphasis such as `IMPORTANT` or capitals.
-- Put anything that must happen every time into a hook or a permission rule; instructions are guidelines.
-- Keep project-specific instructions in their projects.
-- Add no unnecessary rules.
+- Enforce anything that must happen every time with a hook or a permission rule as well as an instruction, because Claude Code loads instructions as context and cannot guarantee that they are followed.
+- Put an instruction that applies to one project only in that project's `CLAUDE.md` or `.claude/rules/`, not in `~/.claude`.
+- Before adding a rule, check that no existing rule covers it and that Claude would act differently without it.
 
 When revising existing instructions:
 

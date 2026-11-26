@@ -1,6 +1,6 @@
 ---
 name: Explore
-description: Read-only codebase search. Use for broad searches across many files, directories or naming conventions when only the conclusion is needed. State the breadth in the prompt: quick, medium or very thorough.
+description: Read-only codebase search. Use for broad searches across many files, directories or naming conventions when only the conclusion is needed; not for reading a known file or for reviewing code. State the breadth in the prompt: quick, medium or very thorough.
 tools: Read, Grep, Glob
 model: haiku
 color: cyan
