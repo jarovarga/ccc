@@ -33,17 +33,17 @@ Each percentage is rounded and has a circle in front of it that fills by quarter
 
 | Glyph | Usage |
 | --- | --- |
-| `○` | Below 13 % |
-| `◔` | 13 to 37 % |
-| `◑` | 38 to 62 % |
-| `◕` | 63 to 87 % |
-| `●` | 88 % and more |
+| `○` | Below 13% |
+| `◔` | 13 to 37% |
+| `◑` | 38 to 62% |
+| `◕` | 63 to 87% |
+| `●` | 88% and more |
 
 | Colour | Usage |
 | --- | --- |
-| Green | Below 70 % |
-| Yellow | 70 to 89 % |
-| Red | 90 % and more |
+| Green | Below 70% |
+| Yellow | 70 to 89% |
+| Red | 90% and more |
 
 > [!tip]
 > Set `NO_COLOR` to any value to show the status line without colours.

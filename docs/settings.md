@@ -2,6 +2,9 @@
 
 The keys of `settings.json`, in alphabetical order inside each block. The [settings reference](https://code.claude.com/docs/en/settings-reference) describes every key in full.
 
+> [!note]
+> Opt-in topics add keys of their own, such as `hooks`, `sandbox.excludedCommands` and `sandbox.filesystem.allowRead`; the `README.md` of each topic describes them, see [docs/opt-in.md](opt-in.md).
+
 ## General
 
 | Key | Value | Effect |
@@ -22,7 +25,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | --- | --- | --- |
 | `allow` | array | Actions that run without a prompt. |
 | `ask` | array | Actions that prompt first, such as deletions. |
-| `deny` | array | Actions that are refused, such as credential reads, pushes and irreversible Git operations. |
+| `deny` | array | Actions that are refused: reading or editing credentials and the shell history, `env`, `printenv` and `sudo`, pushes, irreversible Git operations, and edits of Git configuration and hooks under `~`. |
 | `blockReadsOutsideWorkingDirectories` | `true` | No reads outside the working directories. |
 | `blockWritesOutsideWorkingDirectories` | `true` | No edits outside the working directories. |
 | `disableBypassPermissionsMode` | `"disable"` | `--dangerously-skip-permissions` has no effect. |
