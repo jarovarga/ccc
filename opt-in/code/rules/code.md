@@ -2,31 +2,19 @@
 
 Where the project's framework or coding standard prescribes its own equivalent of a rule here, follow it. For input handling, output escaping and security tests, an equivalent must give at least the same protection.
 
-## Working conventions
-
-- Before code edits, read the relevant `README.md`, documentation, configuration and implementation.
-
 ## Formatting and validation
 
-- Follow the project's `.editorconfig` and formatter settings.
-- Target the language or platform version the project declares.
-- Use a newer feature only when the target supports it.
-- Run the relevant formatter, validator, linter, test and build commands from project configuration, with the command runner named in the project instructions.
+- Treat the project's `.editorconfig`, formatter, linter and static-analysis configurations as authoritative.
+- Target the language or platform version the project declares, and use a newer feature only when the target supports it.
+- Run project commands with the command runner named in the project instructions.
 - Never copy command definitions from project configuration into agent instructions; refer to the configuration instead.
 - Never invent a project script; run and document only the scripts that the project's configuration defines.
-- Add a new script only when the task requires one.
-- Treat project formatter, linter and static-analysis configurations as authoritative.
-- At the start of work on a language, check whether the project configures its linter or validator.
-- If the project configures none, flag it once in the report and continue; do not add one unasked.
+- At the start of work on a language, check whether the project configures its linter or validator; if it configures none, flag it once in the report and continue, and do not add one unasked.
 
 ## Input and output
 
-- Validate input at the boundary.
-- Escape output for its context by default; output unescaped markup only where the task or the project requires raw markup, and say so in a comment.
-- Build SQL, URLs, shell commands and markup:
-  - with parameter binding or structured APIs;
-  - never by concatenating input.
-- Allow-list values that cannot be bound, such as table and column names, sort directions and shell commands.
+- Build SQL, URLs, shell commands and markup with parameter binding or structured APIs, never by concatenating input; allow-list values that cannot be bound, such as table and column names, sort directions and shell commands.
+- Output unescaped markup only where the task or the project requires raw markup, and say so in a comment.
 - Never deserialise untrusted data with a native object serialiser; use JSON.
 - Never let input supply a whole file path; accept only known-good names or indexes.
 - Normalise a path before using it in file operations and reject a result outside the allowed base directory.
@@ -34,32 +22,18 @@ Where the project's framework or coding standard prescribes its own equivalent o
 ## Robustness
 
 - Store and process times in UTC and convert them only for display; never assume a day has 86,400 seconds.
-- Format dates and numbers through locale-aware APIs, never by manual string replacement.
-- Use Unicode-aware string functions for text that can contain non-ASCII characters.
-- Represent money as integer minor units or a decimal type, never as floating point.
 - Give every network call a timeout and handle its failure explicitly.
-- Retry only idempotent operations, with a bounded number of attempts and backoff.
-- Do not make network calls inside a database transaction.
-- Avoid N+1 queries; load related data in one query or a batch.
-- Catch exceptions only to handle or translate them.
-- Never swallow errors.
-- Check a return value that signals failure explicitly; never rely on truthiness.
-- Release resources on every path, including failure.
 - Wrap errors with their original cause and never let low-level or vendor errors cross a layer boundary.
-- Catch broadly only at the entry-point boundary, to log and return a generic error.
 
 ## Changes
 
-- Apply YAGNI: use the smallest sufficient solution and do not add handling for scenarios that cannot occur.
+- Before the first code edit in a project, read its `README.md` and the documentation relevant to the change.
+- Use the smallest sufficient solution: add files, abstractions, interfaces, dependencies, workflows or handling only for a concrete need of the task, without speculative features or unrelated refactoring.
 - Reuse existing components, tokens, helpers, tools, dependencies, frameworks, build systems and conventions.
-- Add files, abstractions, dependencies or workflows only as the task needs them.
-- Avoid speculative features and unrelated refactoring.
 - Normalise only the lines and blocks that the change edits.
 - Handle dead code as follows:
   - remove imports, variables and functions that the change orphaned;
   - mention other dead code in the report instead of deleting it.
-- Never leave debugging calls or output in committed code.
-- Preserve public APIs, module boundaries and event semantics unless the task requires changes.
 - Before renaming or removing any of these, check applicable code, templates, styles, scripts, tests and analytics dependencies:
   - a route, method or API;
   - a CSS class, ID, data attribute or custom property;
@@ -68,21 +42,11 @@ Where the project's framework or coding standard prescribes its own equivalent o
 
 ## Design
 
-- Apply SOLID where it reduces real coupling or duplication:
-  - one responsibility per unit;
-  - narrow interfaces;
-  - injected dependencies;
-  - extension without modifying stable code.
-- Do not add an interface or layer without a concrete need.
-- Expose the smallest useful public API.
 - Never pass a dependency container into a unit as a service locator.
 - Read the environment once at bootstrap and inject configuration.
 - Prefer modern standards-based solutions and native platform features over custom code or new dependencies.
 - Keep cyclomatic complexity per function around 10 or below; split a unit when its complexity grows.
 - Use guard clauses and early returns, or lookups and polymorphism, instead of long conditional chains.
-- Use focused functions instead of nested conditions or loops.
-- Name meaningful or repeated literals as constants or tokens; reuse existing ones before adding new ones.
-- Optimise only with measured evidence; never trade maintainability for unproven micro-optimisation.
 - When refactoring, preserve observable behaviour; do not modernise syntax or rename identifiers for style alone.
 
 ## Comments
