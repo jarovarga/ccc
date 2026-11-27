@@ -29,14 +29,17 @@ cp -R -- "${ROOT_DIR}/agents" "${CONFIG_DIR}/" || exit 1
 # Claude Code also loads CLAUDE.md and rules from every parent of the working
 # directory, which reaches the real ~/.claude; the root CLAUDE.md is already
 # loaded as the user file and would otherwise load again as the project one.
-# The status line command does not receive CLAUDE_CONFIG_DIR, so the copy
-# points it at the copied hook directly.
+# The status line and hook commands name ~/.claude/hooks, which is the real
+# configuration and lacks hooks not yet installed, so the copy points them at
+# the copied hooks directly.
 jq --arg home "${HOME}" --arg root "${ROOT_DIR}" --arg cfg "${CONFIG_DIR}" \
   '. + {claudeMdExcludes: [
     $home + "/.claude/CLAUDE.md",
     $home + "/.claude/rules/**",
     $root + "/CLAUDE.md"
-  ]} | .statusLine.command = ($cfg + "/hooks/statusline.sh" | @sh)' \
+  ]} | .statusLine.command = ($cfg + "/hooks/statusline.sh" | @sh)
+  | .hooks.PreToolUse |= map(.hooks |= map(.command |=
+    (sub("^~/\\.claude/hooks/"; $cfg + "/hooks/") | @sh)))' \
   "${ROOT_DIR}/settings.json" >"${CONFIG_DIR}/settings.json" || exit 1
 
 cd -- "${ROOT_DIR}" || exit 1
