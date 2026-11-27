@@ -1,6 +1,6 @@
 ---
 name: session
-description: Saves the state of the work and resumes it in a new session.
+description: Saves the state of the work for a new session, or resumes from the saved state.
 argument-hint: "save [focus] | resume"
 disable-model-invocation: true
 ---

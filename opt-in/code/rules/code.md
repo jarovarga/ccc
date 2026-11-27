@@ -7,8 +7,8 @@ Where the project's framework or coding standard prescribes its own equivalent o
 - Treat the project's `.editorconfig`, formatter, linter and static-analysis configurations as authoritative.
 - Target the language or platform version the project declares, and use a newer feature only when the target supports it.
 - Run project commands with the command runner named in the project instructions.
-- Never copy command definitions from project configuration into agent instructions; refer to the configuration instead.
-- Never invent a project script; run and document only the scripts that the project's configuration defines.
+- In agent instructions, refer to the project configuration for command definitions; never copy them.
+- Run and document only the scripts that the project's configuration defines; never invent one.
 - At the start of work on a language, check whether the project configures its linter or validator; if it configures none, flag it once in the report and continue, and do not add one unasked.
 
 ## Input and output
@@ -42,7 +42,7 @@ Where the project's framework or coding standard prescribes its own equivalent o
 
 ## Design
 
-- Never pass a dependency container into a unit as a service locator.
+- Pass a unit its individual dependencies, not a dependency container used as a service locator.
 - Read the environment once at bootstrap and inject configuration.
 - Prefer modern standards-based solutions and native platform features over custom code or new dependencies.
 - Keep cyclomatic complexity per function around 10 or below; split a unit when its complexity grows.
