@@ -24,17 +24,14 @@
 - Ask the user to add new environment variables with placeholder values to the example environment file.
 - Never store secrets in source, configuration, fixtures or commits: read them from the environment or the project's secret mechanism, and use placeholders for them and sensitive data in examples, fixtures and docs.
 - Pass secrets via stdin, a file with restrictive permissions or an environment variable, never as command arguments.
-- Redact secrets and sensitive data before sharing output.
 - Report an exposed secret by location (file and line, or command), not value; tell the user it is compromised and must be revoked, not just removed.
 
 ## Dependencies
 
 - Before adding a dependency, verify in the official registry that it exists and is the intended package (name and publisher or repository); never add one from memory.
 - Install, enable or run a plugin, extension, server or downloaded script only if the user named it for the task or approved it after seeing its source and publisher.
-- Never pipe downloaded content into a shell.
 
 ## Services and files
 
 - Never disable TLS certificate or hostname verification anywhere, nor commit or deploy a setting that does.
 - Bind development services to `127.0.0.1`, not all interfaces.
-- Give files and directories the most restrictive permissions that work; never make them world-writable.
