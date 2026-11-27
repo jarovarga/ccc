@@ -57,7 +57,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 
 ## Compatibility
 
-Requires Claude Code 2.1.330 or later and at least macOS 15 (Sequoia).
+Requires Claude Code 2.1.332 or later and at least macOS 15 (Sequoia).
 
 ## Tests
 

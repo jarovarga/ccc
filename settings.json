@@ -43,7 +43,7 @@
     ]
   },
   "includeGitInstructions": false,
-  "minimumVersion": "2.1.330",
+  "minimumVersion": "2.1.332",
   "permissions": {
     "additionalDirectories": ["~/.claude/rules/local"],
     "allow": ["Edit(./.sandbox/**)"],
