@@ -48,6 +48,11 @@
     "additionalDirectories": ["~/.claude/rules/local"],
     "allow": ["Edit(./.sandbox/**)"],
     "ask": [
+      "Bash(bash -c*)",
+      "Bash(eval *)",
+      "Bash(sh -c*)",
+      "Bash(zsh -c*)",
+
       "Bash(find *-delete*)",
       "Bash(rm *)",
       "Bash(rsync *--delete*)",

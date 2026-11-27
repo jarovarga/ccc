@@ -19,7 +19,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 ## Features
 
 - A strict sandbox with a closed network and blocked credential files.
-- Permission rules that deny credential reads and destructive commands, and ask before deletions.
+- Permission rules that deny credential reads and destructive commands, and ask before deletions and before commands run through `bash -c`, `sh -c`, `zsh -c` or `eval`.
 - No attribution in commits and pull requests.
 - A hook that blocks Git commands which skip the Git hooks or set configuration for one command.
 - Replies in the user's language; documentation, comments and commit messages in British English.

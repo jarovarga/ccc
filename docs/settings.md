@@ -43,14 +43,14 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | --- | --- | --- |
 | `additionalDirectories` | `["~/.claude/rules/local"]` | The local rules are a working directory, so Claude can edit them; every edit under `.claude` still prompts. |
 | `allow` | array | Actions that run without a prompt. |
-| `ask` | array | Actions that prompt first, such as deletions. |
+| `ask` | array | Actions that prompt first, such as deletions and commands run through `bash -c`, `sh -c`, `zsh -c` or `eval`, which other rules cannot see into. |
 | `deny` | array | Actions that are refused: reading or editing credentials and the shell history, `env`, `printenv` and `sudo`, pushes, irreversible Git operations, Git commands that discard uncommitted work (`checkout -- <path>`, `restore`, `switch --discard-changes` or `--force`, `worktree remove --force`), and edits of Git configuration and hooks under `~`. |
 | `blockReadsOutsideWorkingDirectories` | `true` | No reads outside the working directories. |
 | `blockWritesOutsideWorkingDirectories` | `true` | No edits outside the working directories. |
 | `disableBypassPermissionsMode` | `"disable"` | `--dangerously-skip-permissions` has no effect. |
 
 > [!important]
-> The sandbox is the security boundary. A `deny` rule matches the text of a command, so a form such as `bash -c '…'` or an absolute path to the program gets past it.
+> The sandbox is the security boundary. A `deny` rule matches the text of a command, so a form such as `bash -c '…'` or an absolute path to the program gets past it. The `ask` rules for `bash -c`, `sh -c`, `zsh -c` and `eval` catch only these exact forms, not `bash -lc`, `/bin/bash -c` or `python -c`.
 
 > [!tip]
 > To work on files outside the project, add their directory with `/add-dir`.
