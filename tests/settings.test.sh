@@ -11,12 +11,12 @@ readonly CORE="${CCC_ROOT}/settings.json"
 begin 'only core keys'
 assert_jq "${CORE}" 'keys == [
   "attribution", "autoCompactWindow", "autoContinueAtUsageLimit",
-  "bashOutputMaxChars", "cleanupPeriodDays",
+  "awaySummaryEnabled", "bashOutputMaxChars", "cleanupPeriodDays",
   "disableClaudeAiConnectors", "disableSkillShellExecution",
   "enableArtifact", "env", "hooks", "includeGitInstructions",
-  "minimumVersion", "permissions",
+  "minimumVersion", "permissions", "promptSuggestionEnabled",
   "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine",
-  "syncClaudeAiSkills"
+  "syncClaudeAiSkills", "workflowKeywordTriggerEnabled"
 ]'
 assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
   "hooks": [{"command": "~/.claude/hooks/git.sh", "onFailure": "block",
@@ -107,6 +107,9 @@ assert_jq "${CORE}" '.autoContinueAtUsageLimit == false'
 assert_jq "${CORE}" '.cleanupPeriodDays == 14'
 assert_jq "${CORE}" '.syncClaudeAiSkills == false'
 assert_jq "${CORE}" '.minimumVersion == "2.1.330"'
+assert_jq "${CORE}" '.awaySummaryEnabled == false'
+assert_jq "${CORE}" '.promptSuggestionEnabled == false'
+assert_jq "${CORE}" '.workflowKeywordTriggerEnabled == false'
 
 begin 'deny rules'
 assert_jq "${CORE}" '[.permissions.deny[] | select(startswith("Bash("))]

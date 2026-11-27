@@ -13,6 +13,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `attribution.sessionUrl` | `false` | No session link in commits and pull requests. |
 | `autoCompactWindow` | `250000` | The conversation compacts once the context holds about 250,000 tokens instead of at the window tuned for the model, which costs less per turn but compacts more often; `/autocompact`, `--autocompact` or `CLAUDE_CODE_AUTO_COMPACT_WINDOW` change it for a model or a session. |
 | `autoContinueAtUsageLimit` | `false` | A session stopped by a claude.ai usage limit does not continue on its own after the reset; a wait can still be started from the usage-limit menu. |
+| `awaySummaryEnabled` | `false` | No one-line session recap on returning to the terminal after a few minutes away; `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` overrides the key for one session. |
 | `bashOutputMaxChars` | `10000` | Claude receives up to 10,000 characters of a successful Bash command's output inline instead of 30,000; longer output goes to a file, and Claude receives a preview and its path. |
 | `cleanupPeriodDays` | `14` | Session transcripts, which can hold sensitive data, are deleted after 14 days instead of 30; sessions of Claude Desktop or Cowork are kept longer. |
 | `disableClaudeAiConnectors` | `true` | No MCP connectors from the claude.ai account. |
@@ -27,10 +28,12 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `hooks.PreToolUse` | `hooks/git.sh` and `hooks/read.sh` for Bash | `git.sh` blocks Git commands that skip the Git hooks (`--no-verify`, `commit -n`, `am -n`) or set configuration for one command (`git -c`, `--config-env`, `GIT_CONFIG_*`); `read.sh` blocks `cat`, `head`, `tail`, `sed` and `awk` when they read a file instead of a pipe, because only the Read tool loads path-scoped rules for every read; `tail -f` passes. With `onFailure: "block"`, a fault in a hook blocks the call too. |
 | `includeGitInstructions` | `false` | The built-in commit and pull request instructions and the Git status snapshot at the start of a session stay out of the context; `rules/git.md` sets the Git workflow, and Claude runs `git status` when it needs it. `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` overrides the key for one session. |
 | `minimumVersion` | `"2.1.330"` | Auto-updates and `claude update` install no version below the one in [Compatibility](../README.md#compatibility); an older version still starts. |
+| `promptSuggestionEnabled` | `false` | No greyed-out prompt suggestions in the input box; `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` overrides the key for one session. |
 | `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |
 | `respectGitignore` | `true` | Files that Git ignores stay out of the `@` picker. |
 | `statusLine` | object | The status line described in [docs/statusline.md](statusline.md). |
 | `syncClaudeAiSkills` | `false` | No skills from the claude.ai account are downloaded or loaded; ones already synced move to `~/.claude/skills/.trash/`. |
+| `workflowKeywordTriggerEnabled` | `false` | The word `ultracode` in a prompt does not start a workflow; the `ultracode` effort setting, `/workflows` and saved workflow commands still work. |
 
 ## Permissions
 

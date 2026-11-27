@@ -6,6 +6,7 @@
   },
   "autoCompactWindow": 250000,
   "autoContinueAtUsageLimit": false,
+  "awaySummaryEnabled": false,
   "bashOutputMaxChars": 10000,
   "cleanupPeriodDays": 14,
   "disableClaudeAiConnectors": true,
@@ -171,6 +172,7 @@
     "blockWritesOutsideWorkingDirectories": true,
     "disableBypassPermissionsMode": "disable"
   },
+  "promptSuggestionEnabled": false,
   "remoteControlAtStartup": false,
   "respectGitignore": true,
   "sandbox": {
@@ -223,5 +225,6 @@
     "type": "command",
     "command": "~/.claude/hooks/statusline.sh"
   },
-  "syncClaudeAiSkills": false
+  "syncClaudeAiSkills": false,
+  "workflowKeywordTriggerEnabled": false
 }
