@@ -16,6 +16,8 @@ assert_jq "${CORE}" 'keys == [
 ]'
 assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
   "hooks": [{"command": "~/.claude/hooks/git.sh", "onFailure": "block",
+    "timeout": 10, "type": "command"},
+    {"command": "~/.claude/hooks/read.sh", "onFailure": "block",
     "timeout": 10, "type": "command"}]}]}'
 assert_jq "${CORE}" '.permissions | keys == [
   "additionalDirectories", "allow", "ask",
