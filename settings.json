@@ -40,6 +40,7 @@
       }
     ]
   },
+  "includeGitInstructions": false,
   "minimumVersion": "2.1.330",
   "permissions": {
     "additionalDirectories": ["~/.claude/rules/local"],

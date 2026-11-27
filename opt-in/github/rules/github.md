@@ -9,4 +9,5 @@ This rule applies while the `github` topic's settings are in `~/.claude/settings
   - no pipe, `&&`, `;` or `$(…)`;
   - no redirect other than to a file descriptor, such as `2>&1`.
 - Do not batch `gh` with other tool calls in one block.
+- Write `@<login>` in issues, pull requests and comments only to notify that user; put roles, placeholders and code such as `@types/node` in backticks.
 - Write remote addresses in the SSH form (`git@github.com:<account>/<repository>.git`).

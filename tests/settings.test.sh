@@ -13,7 +13,8 @@ assert_jq "${CORE}" 'keys == [
   "attribution", "autoCompactWindow", "autoContinueAtUsageLimit",
   "bashOutputMaxChars", "cleanupPeriodDays",
   "disableClaudeAiConnectors", "disableSkillShellExecution",
-  "enableArtifact", "env", "hooks", "minimumVersion", "permissions",
+  "enableArtifact", "env", "hooks", "includeGitInstructions",
+  "minimumVersion", "permissions",
   "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine",
   "syncClaudeAiSkills"
 ]'
@@ -76,6 +77,7 @@ assert_jq "${CORE}" '.env == {
 begin 'context limits'
 assert_jq "${CORE}" '.autoCompactWindow == 250000'
 assert_jq "${CORE}" '.bashOutputMaxChars == 10000'
+assert_jq "${CORE}" '.includeGitInstructions == false'
 
 begin 'closed network'
 assert_jq "${CORE}" '.sandbox.network.allowedDomains == []'
