@@ -37,7 +37,7 @@ nano ~/Library/LaunchAgents/local.ssh-agent.plist
 </plist>
 ```
 
-Start it; `launchctl load` does the same, but `man launchctl` lists it among the legacy subcommands:
+Start it:
 
 ```bash
 launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/local.ssh-agent.plist
