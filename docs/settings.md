@@ -19,6 +19,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `disableClaudeAiConnectors` | `true` | No MCP connectors from the claude.ai account. |
 | `disableSkillShellExecution` | `true` | Skills cannot run shell commands on load; bundled ones are unaffected. |
 | `enableArtifact` | `false` | No publishing of artifacts to claude.ai. |
+| `env.CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` | `0` | Code Mode stays off, even when another source sets it to `1`; its scripts run outside the sandbox, and only the shell commands they start run inside it. |
 | `env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | `5` | At most 5 subagents run at once instead of 20; the Agent tool refuses another until one finishes. |
 | `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` | `1` | Subagents cannot start subagents of their own; the default allows three layers. |
 | `env.CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` | `25` | At most 25 web searches per session instead of 200; after that, Claude continues with what it has found and says so. |

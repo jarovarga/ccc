@@ -66,6 +66,7 @@ assert_jq "${CORE}" '.sandbox.credentials.files | sort_by(.path) == [
 
 begin 'environment scrub and limits only'
 assert_jq "${CORE}" '.env == {
+  "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE": "0",
   "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5",
   "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
   "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "25",
