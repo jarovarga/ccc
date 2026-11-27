@@ -11,12 +11,19 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | --- | --- | --- |
 | `attribution.commit`, `attribution.pr` | `""` | No attribution text in commits and pull requests. |
 | `attribution.sessionUrl` | `false` | No session link in commits and pull requests. |
+| `autoCompactWindow` | `250000` | The conversation compacts once the context holds about 250,000 tokens instead of at the window tuned for the model, which costs less per turn but compacts more often; `/autocompact`, `--autocompact` or `CLAUDE_CODE_AUTO_COMPACT_WINDOW` change it for a model or a session. |
 | `autoContinueAtUsageLimit` | `false` | A session stopped by a claude.ai usage limit does not continue on its own after the reset; a wait can still be started from the usage-limit menu. |
+| `bashOutputMaxChars` | `10000` | Claude receives up to 10,000 characters of a successful Bash command's output inline instead of 30,000; longer output goes to a file, and Claude receives a preview and its path. |
 | `cleanupPeriodDays` | `14` | Session transcripts, which can hold sensitive data, are deleted after 14 days instead of 30; sessions of Claude Desktop or Cowork are kept longer. |
 | `disableClaudeAiConnectors` | `true` | No MCP connectors from the claude.ai account. |
 | `disableSkillShellExecution` | `true` | Skills cannot run shell commands on load; bundled ones are unaffected. |
 | `enableArtifact` | `false` | No publishing of artifacts to claude.ai. |
+| `env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | `5` | At most 5 subagents run at once instead of 20; the Agent tool refuses another until one finishes. |
+| `env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` | `1` | Subagents cannot start subagents of their own; the default allows three layers. |
+| `env.CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` | `25` | At most 25 web searches per session instead of 200; after that, Claude continues with what it has found and says so. |
 | `env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | `1` | No credentials in the environment of subprocesses. |
+| `env.CLAUDE_CODE_WEBFETCH_DEADLINE_MS` | `60000` | A WebFetch download, including its redirects, fails after one minute instead of five. |
+| `env.MAX_MCP_OUTPUT_TOKENS` | `10000` | An MCP tool result over 10,000 tokens instead of 25,000 goes to a file, and Claude receives its path; tools that declare their own limit keep it for text. |
 | `hooks.PreToolUse` | `hooks/git.sh` and `hooks/read.sh` for Bash | `git.sh` blocks Git commands that skip the Git hooks (`--no-verify`, `commit -n`, `am -n`) or set configuration for one command (`git -c`, `--config-env`, `GIT_CONFIG_*`); `read.sh` blocks `cat`, `head`, `tail`, `sed` and `awk` when they read a file instead of a pipe, because only the Read tool loads path-scoped rules for every read; `tail -f` passes. With `onFailure: "block"`, a fault in a hook blocks the call too. |
 | `minimumVersion` | `"2.1.330"` | Auto-updates and `claude update` install no version below the one in [Compatibility](../README.md#compatibility); an older version still starts. |
 | `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |

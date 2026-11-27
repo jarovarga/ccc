@@ -10,7 +10,8 @@ readonly CORE="${CCC_ROOT}/settings.json"
 
 begin 'only core keys'
 assert_jq "${CORE}" 'keys == [
-  "attribution", "autoContinueAtUsageLimit", "cleanupPeriodDays",
+  "attribution", "autoCompactWindow", "autoContinueAtUsageLimit",
+  "bashOutputMaxChars", "cleanupPeriodDays",
   "disableClaudeAiConnectors", "disableSkillShellExecution",
   "enableArtifact", "env", "hooks", "minimumVersion", "permissions",
   "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine",
@@ -62,19 +63,26 @@ assert_jq "${CORE}" '.sandbox.credentials.files | sort_by(.path) == [
   {"mode": "deny", "path": "~/.zsh_sessions"}
 ]'
 
-begin 'environment scrub only'
-assert_jq "${CORE}" '.env == {"CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"}'
+begin 'environment scrub and limits only'
+assert_jq "${CORE}" '.env == {
+  "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5",
+  "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+  "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "25",
+  "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1",
+  "CLAUDE_CODE_WEBFETCH_DEADLINE_MS": "60000",
+  "MAX_MCP_OUTPUT_TOKENS": "10000"
+}'
+
+begin 'context limits'
+assert_jq "${CORE}" '.autoCompactWindow == 250000'
+assert_jq "${CORE}" '.bashOutputMaxChars == 10000'
 
 begin 'closed network'
 assert_jq "${CORE}" '.sandbox.network.allowedDomains == []'
 
 begin 'allow outside Bash'
 assert_jq "${CORE}" '[.permissions.allow[] | select(startswith("Bash(") | not)]
-  | sort == [
-    "Edit(./.sandbox/**)",
-    "WebFetch(domain:code.claude.com)",
-    "WebFetch(domain:developer.mozilla.org)"
-  ]'
+  == ["Edit(./.sandbox/**)"]'
 
 begin 'only local rules as an extra working directory'
 assert_jq "${CORE}" \
