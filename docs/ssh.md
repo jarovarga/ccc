@@ -104,4 +104,4 @@ Allow the socket in `~/.claude/settings.json`; the `~` form works:
 The path depends on this setup, so it is not in the `settings.json` of this repository. That file already lets sandboxed Git read `~/.config/git/allowed_signers` through `sandbox.filesystem.allowRead`.
 
 > [!note]
-> The Bash commands of Claude Code may not inherit `SSH_AUTH_SOCK`, for example because of `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`. Check with `echo "${SSH_AUTH_SOCK:-unset}"` in a Claude Code session; when it prints `unset`, pass the variable to the command, as in `SSH_AUTH_SOCK=~/.local/run/ssh-agent.sock git commit`.
+> `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` in `settings.json` removes `SSH_AUTH_SOCK` from the Bash commands of Claude Code, also when it is set through `env` in the settings. Pass the variable to each command that signs, as in `SSH_AUTH_SOCK=~/.local/run/ssh-agent.sock git commit`.
