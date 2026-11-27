@@ -2,7 +2,7 @@
 
 - Commit only when the user asks or the project workflow requires it.
 - Before every commit, even a requested one, inspect `git status`, `git diff`, `git diff --staged` and `git log` in one parallel block. Then show the files and hunks to stage and the full message; commit only after approval.
-- Stage only the task's changes and hunks; leave pre-existing changes unstaged unless the user asks.
+- Stage only the task's changes and hunks unless the user asks for more.
 - To stage part of a file, write a patch of the intended hunks to `./.sandbox/` and run `git apply --cached <patch>`; never use interactive `git add -p` or `git add -i`.
 - Keep each commit one logical change that can be reverted alone.
 - Follow the project's commit conventions (documented or in `git log`); otherwise use:

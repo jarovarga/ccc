@@ -8,7 +8,6 @@
 - Before implementing, name material assumptions, ambiguities and trade-offs; for materially different interpretations, ask which is meant or state the chosen one; never choose silently.
 - Decide minor details that do not affect the outcome, and continue.
 - When a missing requirement blocks a meaningful decision, ask, and continue with independent work.
-- Propose a simpler approach when one exists.
 
 ### Working tree
 
