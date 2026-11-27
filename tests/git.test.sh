@@ -69,6 +69,7 @@ assert_hook "${BLOCK}" 'git --attr-source HEAD commit -n'
 assert_hook "${BLOCK}" '/usr/bin/git commit --no-verify'
 assert_hook "${BLOCK}" 'rtk git commit --no-verify -m "x"'
 assert_hook "${BLOCK}" 'cd repo && git commit --no-verify'
+assert_hook "${BLOCK}" "cd 'repo' && git commit --no-verify"
 assert_hook "${BLOCK}" "echo \"\$(git commit --no-verify)\""
 
 begin 'configuration for one command'
