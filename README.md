@@ -42,6 +42,17 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 | `CLAUDE.md` | Instructions that Claude loads at the start of every session. |
 | `settings.json` | User settings for permissions, the sandbox and the interface. |
 
+## Local rules
+
+`rules/local/` holds rules of your own, such as personal preferences or settings of one machine.
+
+- `local.md` starts empty and loads in every session.
+- A rule for some files only goes into its own file with `paths`.
+- Claude can edit the directory, but every edit prompts first.
+
+> [!warning]
+> When updating `~/.claude/rules/` from the repository, do not overwrite your own `local/` with the empty one.
+
 ## Compatibility
 
 Requires Claude Code 2.1.330 or later and at least macOS 15 (Sequoia).

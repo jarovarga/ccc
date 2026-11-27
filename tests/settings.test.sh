@@ -18,7 +18,8 @@ assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
   "hooks": [{"command": "~/.claude/hooks/git.sh", "onFailure": "block",
     "timeout": 10, "type": "command"}]}]}'
 assert_jq "${CORE}" '.permissions | keys == [
-  "allow", "ask", "blockReadsOutsideWorkingDirectories",
+  "additionalDirectories", "allow", "ask",
+  "blockReadsOutsideWorkingDirectories",
   "blockWritesOutsideWorkingDirectories", "deny",
   "disableBypassPermissionsMode"
 ]'
@@ -70,6 +71,10 @@ assert_jq "${CORE}" '[.permissions.allow[] | select(startswith("Bash(") | not)]
     "WebFetch(domain:code.claude.com)",
     "WebFetch(domain:developer.mozilla.org)"
   ]'
+
+begin 'only local rules as an extra working directory'
+assert_jq "${CORE}" \
+  '.permissions.additionalDirectories == ["~/.claude/rules/local"]'
 
 begin 'permission switches'
 assert_jq "${CORE}" '.permissions.disableBypassPermissionsMode == "disable"'
