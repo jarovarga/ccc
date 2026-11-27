@@ -27,6 +27,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - A status line with the model, the effort, the context and rate limit usage, and the session cost.
 - A read-only `Explore` agent on Haiku that follows these rules.
 - A `/session` command that saves the state of the work and resumes it in a new session.
+- A `/remember` command that turns an instruction into a rule and adds it to the local rules after approval.
 
 ## Contents
 
@@ -49,6 +50,7 @@ A personal, user-level [Claude Code](https://code.claude.com) configuration.
 - `local.md` starts empty and loads in every session.
 - A rule for some files only goes into its own file with `paths`.
 - Claude can edit the directory, but every edit prompts first.
+- `/remember` writes new rules there.
 
 > [!warning]
 > When updating `~/.claude/rules/` from the repository, do not overwrite your own `local/` with the empty one.
