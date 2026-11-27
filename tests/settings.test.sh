@@ -15,7 +15,8 @@ assert_jq "${CORE}" 'keys == [
   "disableClaudeAiConnectors", "disableSkillShellExecution",
   "enableArtifact", "env", "hooks", "includeGitInstructions",
   "minimumVersion", "permissions", "promptSuggestionEnabled",
-  "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine",
+  "remoteControlAtStartup", "respectGitignore", "sandbox",
+  "skillListingMaxDescChars", "statusLine",
   "syncClaudeAiSkills", "workflowKeywordTriggerEnabled"
 ]'
 assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
@@ -79,6 +80,7 @@ begin 'context limits'
 assert_jq "${CORE}" '.autoCompactWindow == 250000'
 assert_jq "${CORE}" '.bashOutputMaxChars == 10000'
 assert_jq "${CORE}" '.includeGitInstructions == false'
+assert_jq "${CORE}" '.skillListingMaxDescChars == 512'
 
 begin 'closed network'
 assert_jq "${CORE}" '.sandbox.network.allowedDomains == []'

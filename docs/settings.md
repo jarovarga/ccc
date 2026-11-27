@@ -32,6 +32,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `promptSuggestionEnabled` | `false` | No greyed-out prompt suggestions in the input box; `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` overrides the key for one session. |
 | `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |
 | `respectGitignore` | `true` | Files that Git ignores stay out of the `@` picker. |
+| `skillListingMaxDescChars` | `512` | The skill listing in the context shows at most 512 characters of each skill's `description` and `when_to_use` instead of 1,536; every skill name stays listed, so a skill with a cut description can still be invoked. |
 | `statusLine` | object | The status line described in [docs/statusline.md](statusline.md). |
 | `syncClaudeAiSkills` | `false` | No skills from the claude.ai account are downloaded or loaded; ones already synced move to `~/.claude/skills/.trash/`. |
 | `workflowKeywordTriggerEnabled` | `false` | The word `ultracode` in a prompt does not start a workflow; the `ultracode` effort setting, `/workflows` and saved workflow commands still work. |

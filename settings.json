@@ -222,6 +222,7 @@
       "allowedDomains": []
     }
   },
+  "skillListingMaxDescChars": 512,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/hooks/statusline.sh"
