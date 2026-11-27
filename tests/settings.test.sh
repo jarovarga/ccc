@@ -97,8 +97,10 @@ assert_jq "${CORE}" '[.permissions.deny[] | select(startswith("Bash("))]
   | sort == ([
   "Bash(env)", "Bash(printenv*)", "Bash(sudo *)"
 ] + ([
-  "clean*", "filter-repo*", "gc --prune*", "push*", "reflog expire*",
-  "reset --hard*", "stash clear*"
+  "checkout *-- *", "clean*", "filter-repo*", "gc --prune*", "push*",
+  "reflog expire*", "reset --hard*", "restore*", "stash clear*",
+  "switch *--discard-changes*", "switch *--force*", "switch -f*",
+  "worktree remove *--force*", "worktree remove -f*"
 ] | map("Bash(git " + . + ")", "Bash(git -C * " + . + ")")) | sort)'
 
 begin 'credential files denied'

@@ -27,7 +27,7 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | `additionalDirectories` | `["~/.claude/rules/local"]` | The local rules are a working directory, so Claude can edit them; every edit under `.claude` still prompts. |
 | `allow` | array | Actions that run without a prompt. |
 | `ask` | array | Actions that prompt first, such as deletions. |
-| `deny` | array | Actions that are refused: reading or editing credentials and the shell history, `env`, `printenv` and `sudo`, pushes, irreversible Git operations, and edits of Git configuration and hooks under `~`. |
+| `deny` | array | Actions that are refused: reading or editing credentials and the shell history, `env`, `printenv` and `sudo`, pushes, irreversible Git operations, Git commands that discard uncommitted work (`checkout -- <path>`, `restore`, `switch --discard-changes` or `--force`, `worktree remove --force`), and edits of Git configuration and hooks under `~`. |
 | `blockReadsOutsideWorkingDirectories` | `true` | No reads outside the working directories. |
 | `blockWritesOutsideWorkingDirectories` | `true` | No edits outside the working directories. |
 | `disableBypassPermissionsMode` | `"disable"` | `--dangerously-skip-permissions` has no effect. |
