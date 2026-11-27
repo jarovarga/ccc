@@ -11,14 +11,18 @@ The keys of `settings.json`, in alphabetical order inside each block. The [setti
 | --- | --- | --- |
 | `attribution.commit`, `attribution.pr` | `""` | No attribution text in commits and pull requests. |
 | `attribution.sessionUrl` | `false` | No session link in commits and pull requests. |
+| `autoContinueAtUsageLimit` | `false` | A session stopped by a claude.ai usage limit does not continue on its own after the reset; a wait can still be started from the usage-limit menu. |
+| `cleanupPeriodDays` | `14` | Session transcripts, which can hold sensitive data, are deleted after 14 days instead of 30; sessions of Claude Desktop or Cowork are kept longer. |
 | `disableClaudeAiConnectors` | `true` | No MCP connectors from the claude.ai account. |
 | `disableSkillShellExecution` | `true` | Skills cannot run shell commands on load; bundled ones are unaffected. |
 | `enableArtifact` | `false` | No publishing of artifacts to claude.ai. |
 | `env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | `1` | No credentials in the environment of subprocesses. |
 | `hooks.PreToolUse` | `hooks/git.sh` and `hooks/read.sh` for Bash | `git.sh` blocks Git commands that skip the Git hooks (`--no-verify`, `commit -n`, `am -n`) or set configuration for one command (`git -c`, `--config-env`, `GIT_CONFIG_*`); `read.sh` blocks `cat`, `head`, `tail`, `sed` and `awk` when they read a file instead of a pipe, because only the Read tool loads path-scoped rules for every read; `tail -f` passes. With `onFailure: "block"`, a fault in a hook blocks the call too. |
+| `minimumVersion` | `"2.1.330"` | Auto-updates and `claude update` install no version below the one in [Compatibility](../README.md#compatibility); an older version still starts. |
 | `remoteControlAtStartup` | `false` | A session does not start with Remote Control. |
 | `respectGitignore` | `true` | Files that Git ignores stay out of the `@` picker. |
 | `statusLine` | object | The status line described in [docs/statusline.md](statusline.md). |
+| `syncClaudeAiSkills` | `false` | No skills from the claude.ai account are downloaded or loaded; ones already synced move to `~/.claude/skills/.trash/`. |
 
 ## Permissions
 

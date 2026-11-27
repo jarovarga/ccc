@@ -10,9 +10,11 @@ readonly CORE="${CCC_ROOT}/settings.json"
 
 begin 'only core keys'
 assert_jq "${CORE}" 'keys == [
-  "attribution", "disableClaudeAiConnectors", "disableSkillShellExecution",
-  "enableArtifact", "env", "hooks", "permissions",
-  "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine"
+  "attribution", "autoContinueAtUsageLimit", "cleanupPeriodDays",
+  "disableClaudeAiConnectors", "disableSkillShellExecution",
+  "enableArtifact", "env", "hooks", "minimumVersion", "permissions",
+  "remoteControlAtStartup", "respectGitignore", "sandbox", "statusLine",
+  "syncClaudeAiSkills"
 ]'
 assert_jq "${CORE}" '.hooks == {"PreToolUse": [{"matcher": "Bash",
   "hooks": [{"command": "~/.claude/hooks/git.sh", "onFailure": "block",
@@ -91,6 +93,10 @@ assert_jq "${CORE}" \
 assert_jq "${CORE}" '.disableClaudeAiConnectors == true'
 assert_jq "${CORE}" '.enableArtifact == false'
 assert_jq "${CORE}" '.respectGitignore == true'
+assert_jq "${CORE}" '.autoContinueAtUsageLimit == false'
+assert_jq "${CORE}" '.cleanupPeriodDays == 14'
+assert_jq "${CORE}" '.syncClaudeAiSkills == false'
+assert_jq "${CORE}" '.minimumVersion == "2.1.330"'
 
 begin 'deny rules'
 assert_jq "${CORE}" '[.permissions.deny[] | select(startswith("Bash("))]

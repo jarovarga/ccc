@@ -4,6 +4,8 @@
     "pr": "",
     "sessionUrl": false
   },
+  "autoContinueAtUsageLimit": false,
+  "cleanupPeriodDays": 14,
   "disableClaudeAiConnectors": true,
   "disableSkillShellExecution": true,
   "enableArtifact": false,
@@ -31,6 +33,7 @@
       }
     ]
   },
+  "minimumVersion": "2.1.330",
   "permissions": {
     "additionalDirectories": ["~/.claude/rules/local"],
     "allow": [
@@ -195,5 +198,6 @@
   "statusLine": {
     "type": "command",
     "command": "~/.claude/hooks/statusline.sh"
-  }
+  },
+  "syncClaudeAiSkills": false
 }
