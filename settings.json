@@ -35,7 +35,9 @@
   },
   "minimumVersion": "2.1.330",
   "permissions": {
-    "additionalDirectories": ["~/.claude/rules/local"],
+    "additionalDirectories": [
+      "~/.claude/rules/local"
+    ],
     "allow": [
       "Edit(./.sandbox/**)",
 
@@ -175,21 +177,47 @@
     "autoAllowBashIfSandboxed": true,
     "credentials": {
       "files": [
-        { "mode": "deny", "path": "~/.bash_history" },
-        { "mode": "deny", "path": "~/.git-credentials" },
-        { "mode": "deny", "path": "~/.gnupg" },
-        { "mode": "deny", "path": "~/.netrc" },
-        { "mode": "deny", "path": "~/.ssh" },
-        { "mode": "deny", "path": "~/.zsh_history" },
-        { "mode": "deny", "path": "~/.zsh_sessions" }
+        {
+          "mode": "deny",
+          "path": "~/.bash_history"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.git-credentials"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.gnupg"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.netrc"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.ssh"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.zsh_history"
+        },
+        {
+          "mode": "deny",
+          "path": "~/.zsh_sessions"
+        }
       ]
     },
     "enabled": true,
     "excludedCommands": [],
     "failIfUnavailable": true,
     "filesystem": {
-      "allowRead": ["~/.config/git/allowed_signers"],
-      "denyWrite": ["~/**/.git/config", "~/**/.git/hooks"]
+      "allowRead": [
+        "~/.config/git/allowed_signers"
+      ],
+      "denyWrite": [
+        "~/**/.git/config",
+        "~/**/.git/hooks"
+      ]
     },
     "network": {
       "allowedDomains": []
